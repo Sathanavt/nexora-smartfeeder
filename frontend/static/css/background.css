@@ -1,0 +1,71 @@
+/* ==========================================================
+   SmartFeeder EMS — Global Engineered Background Layer
+   Official Substation + Transmission + Solar PV Infrastructure
+   Balanced Translucent Light Overlay (rgba(255, 255, 255, 0.72))
+   ========================================================== */
+
+/* 1. Global Viewport Background Container (Fixed Behind All Pages) */
+.global-background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* 2. Official High-Resolution Substation + Solar-Panel Infrastructure Photo */
+.global-background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('../images/smartfeeder_bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* 3. Subtle Translucent Light Overlay (Balanced 0.72 Opacity) */
+.global-background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.72);
+}
+
+/* 4. Responsive Viewport Adaptations */
+@media (max-width: 1280px) {
+  .global-background-image {
+    background-position: center center;
+  }
+}
+
+@media (max-width: 1024px) {
+  .global-background-image {
+    background-position: center center;
+  }
+  .global-background-overlay {
+    background-color: rgba(255, 255, 255, 0.74);
+  }
+}
+
+@media (max-width: 768px) {
+  .global-background-image {
+    background-position: center center;
+  }
+  .global-background-overlay {
+    background-color: rgba(255, 255, 255, 0.75);
+  }
+}

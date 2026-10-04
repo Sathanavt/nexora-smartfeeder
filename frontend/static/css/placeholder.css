@@ -1,0 +1,185 @@
+/* ==========================================================
+   SmartFeeder EMS - Temporary Protected Home Placeholder
+   Light Corporate MNC Design Architecture
+   ========================================================== */
+
+body {
+  background-color: transparent;
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.placeholder-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  position: relative;
+}
+
+/* Corporate Top Navigation Bar */
+.placeholder-header {
+  height: 60px;
+  background: var(--surface-card);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+}
+
+.brand-mini {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.brand-mini-icon {
+  width: 28px;
+  height: 28px;
+  background: var(--brand-green-light);
+  border: 1px solid rgba(0, 132, 61, 0.2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-green-primary);
+}
+
+.brand-mini-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.01em;
+}
+
+.brand-mini-title .brand-accent {
+  color: var(--brand-green-primary);
+}
+
+.header-user-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-light);
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+}
+
+.user-badge .role-pill {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: var(--brand-green-light);
+  color: var(--brand-green-primary);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+}
+
+.btn-logout {
+  background: var(--surface-card);
+  border: 1px solid var(--border-medium);
+  color: #DC2626;
+  font-family: var(--font-sans);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all var(--transition-fast);
+}
+
+.btn-logout:hover {
+  background: #FEF2F2;
+  border-color: #FCA5A5;
+}
+
+/* Main Placeholder Content */
+.placeholder-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+}
+
+.placeholder-card {
+  max-width: 520px;
+  width: 100%;
+  background: var(--surface-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 2.75rem 2.25rem;
+  text-align: center;
+  box-shadow: var(--shadow-card-elevated);
+  animation: card-appear 300ms ease-out;
+}
+
+.success-badge {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--brand-green-light);
+  border: 1px solid rgba(0, 132, 61, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem auto;
+  color: var(--brand-green-primary);
+}
+
+.placeholder-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.placeholder-title .brand-accent {
+  color: var(--brand-green-primary);
+}
+
+.placeholder-tagline {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.status-callout {
+  margin: 1.75rem 0;
+  padding: 0.85rem 1rem;
+  background: var(--brand-green-light);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.status-callout h3 {
+  font-size: 0.95rem;
+  color: var(--brand-green-primary);
+  font-weight: 600;
+}
+
+.next-steps-info {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}

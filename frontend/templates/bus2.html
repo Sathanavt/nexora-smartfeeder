@@ -1,0 +1,423 @@
+{% extends "dashboard_shell.html" %}
+
+{% block title %}BUS-2 Detailed Dashboard | SmartFeeder EMS{% endblock %}
+{% block breadcrumb_title %}BUS-2{% endblock %}
+
+{% block shell_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bus.css') }}">
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="bus-dashboard-container">
+
+  <!-- ==========================================================
+       1. TOP NAVIGATION & BACK BUTTON
+       ========================================================== -->
+  <nav class="bus-top-nav" aria-label="Page Navigation">
+    <a href="/" class="btn-back-home" title="Return to Home Dashboard">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>← Back to Home</span>
+    </a>
+
+    <div class="bus-breadcrumb-path">
+      <a href="/" title="Home Dashboard">Home</a>
+      <span class="crumb-separator">/</span>
+      <span class="crumb-current">BUS-2</span>
+    </div>
+  </nav>
+
+  <!-- ==========================================================
+       2. PAGE HEADING BANNER
+       ========================================================== -->
+  <header class="bus-heading-banner">
+    <div class="bus-title-group">
+      <div class="bus-title-row">
+        <h1 class="bus-main-title">BUS-2</h1>
+        <span class="bus-asset-chip">BUS-2 • 4 Feeders • Solar-B • BESS-B</span>
+      </div>
+      <p class="bus-subtitle">11 kV Distribution Bus — Detailed Asset & Telemetry Overview</p>
+    </div>
+
+    <div class="bus-telemetry-badge">
+      <span class="ts-label">LATEST TELEMETRY:</span>
+      <span id="busTsVal" class="ts-value">{{ data.timestamp_formatted if data else 'Loading...' }}</span>
+      <button id="btnRefreshBus2" class="btn-refresh" title="Refresh BUS-2 Telemetry" aria-label="Refresh Telemetry">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       3. BUS-2 COMPACT SUMMARY CARD
+       ========================================================== -->
+  <section class="bus-summary-card" aria-label="BUS-2 Summary Status Card">
+    <div class="card-accent-stripe green" aria-hidden="true"></div>
+    <div class="summary-card-header">
+      <div class="summary-card-title-group">
+        <h2 class="summary-heading">BUS-2 STATUS</h2>
+        <span class="bus-live-badge">
+          <span class="pulse-dot" aria-hidden="true"></span>
+          <span>LIVE</span>
+        </span>
+      </div>
+      <div class="section-annotation">11 kV Primary Distribution System</div>
+    </div>
+
+    <div class="summary-metrics-grid">
+      <!-- 1. Demand -->
+      <div class="metric-cell highlight-cell">
+        <span class="metric-cell-label">
+          <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+          Current Bus Demand
+        </span>
+        <div class="metric-cell-value text-green">
+          <span id="summaryDemand">{{ "%.1f"|format(data.summary.demand_kw) if data else '--' }}</span>
+          <span class="metric-cell-unit">kW</span>
+        </div>
+      </div>
+
+      <!-- 2. Voltage -->
+      <div class="metric-cell">
+        <span class="metric-cell-label">
+          <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          Bus Voltage
+        </span>
+        <div class="metric-cell-value">
+          <span id="summaryVoltage">{{ "%.2f"|format(data.summary.voltage_kv) if data else '--' }}</span>
+          <span class="metric-cell-unit">kV</span>
+        </div>
+      </div>
+
+      <!-- 3. Current -->
+      <div class="metric-cell">
+        <span class="metric-cell-label">
+          <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path><path d="M12 8l4 4-4 4"></path></svg>
+          Bus Current
+        </span>
+        <div class="metric-cell-value">
+          <span id="summaryCurrent">{{ "%.1f"|format(data.summary.current_a) if data else '--' }}</span>
+          <span class="metric-cell-unit">A</span>
+        </div>
+      </div>
+
+      <!-- 4. Frequency -->
+      <div class="metric-cell">
+        <span class="metric-cell-label">
+          <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12c2.5-6 5.5-6 8 0s5.5 6 8 0 3.5-3 4-3"></path></svg>
+          Bus Frequency
+        </span>
+        <div class="metric-cell-value">
+          <span id="summaryFreq">{{ "%.2f"|format(data.summary.frequency_hz) if data else '--' }}</span>
+          <span class="metric-cell-unit">Hz</span>
+        </div>
+      </div>
+
+      <!-- 5. Solar Status -->
+      <div class="metric-cell">
+        <span class="metric-cell-label">
+          <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path></svg>
+          Solar Status
+        </span>
+        <div id="summarySolarStatus" class="cell-status-chip {{ 'active' if data and data.summary.solar_status == 'ACTIVE' else 'inactive' }}">
+          {{ data.summary.solar_status if data else 'INACTIVE' }}
+        </div>
+      </div>
+
+      <!-- 6. BESS Status -->
+      <div class="metric-cell">
+        <span class="metric-cell-label">
+          <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="16" height="10" rx="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>
+          BESS Status
+        </span>
+        <div id="summaryBessStatus" class="cell-status-chip {{ data.summary.bess_status.lower() if data else 'idle' }}">
+          {{ data.summary.bess_status if data else 'IDLE' }}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       4. BUS-2 FEEDERS SECTION (Feeders 5 to 8)
+       ========================================================== -->
+  <section class="bus-feeders-section" aria-label="BUS-2 Distribution Feeders">
+    <div class="section-header-row">
+      <div class="section-title-wrap">
+        <h2 class="section-main-heading">BUS-2 FEEDERS</h2>
+        <span class="section-count-badge">4 Connected Feeders</span>
+      </div>
+      <div class="section-annotation">Click any feeder card to open detailed feeder telemetry</div>
+    </div>
+
+    <div class="feeders-grid" id="feedersGrid">
+      {% if data and data.feeders %}
+        {% for f in data.feeders %}
+        <a href="{{ f.route }}" class="feeder-card" id="cardFeeder{{ f.id }}" title="View {{ f.name }} Details" aria-label="{{ f.name }} {{ f.type }} - Click for Details">
+          <div class="feeder-card-header">
+            <div class="feeder-identity">
+              <div class="feeder-icon-wrap" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                </svg>
+              </div>
+              <div class="feeder-name-block">
+                <span class="feeder-name">{{ f.name }}</span>
+                <span class="feeder-type">{{ f.type }}</span>
+              </div>
+            </div>
+            <span class="bus-live-badge">
+              <span class="pulse-dot" aria-hidden="true"></span>
+              <span>LIVE</span>
+            </span>
+          </div>
+
+          <!-- Feeder Primary Demand -->
+          <div class="feeder-demand-block">
+            <span class="feeder-demand-label">
+              <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+              Feeder Demand
+            </span>
+            <div class="feeder-demand-val-row">
+              <span class="feeder-demand-val" id="feederDemand{{ f.id }}">{{ "%.2f"|format(f.demand_kw) }}</span>
+              <span class="feeder-demand-unit">kW</span>
+            </div>
+          </div>
+
+          <!-- Feeder Electrical Parameters -->
+          <div class="feeder-params-grid">
+            <div class="feeder-param-item">
+              <span class="param-lbl">
+                <svg class="param-micro-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+                Voltage
+              </span>
+              <span class="param-val" id="feederVoltage{{ f.id }}">{{ "%.2f"|format(f.voltage_kv) }} kV</span>
+            </div>
+            <div class="feeder-param-item">
+              <span class="param-lbl">
+                <svg class="param-micro-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12c2.5-6 5.5-6 8 0s5.5 6 8 0 3.5-3 4-3"></path></svg>
+                Frequency
+              </span>
+              <span class="param-val" id="feederFreq{{ f.id }}">{{ "%.2f"|format(f.frequency_hz) }} Hz</span>
+            </div>
+            <div class="feeder-param-item">
+              <span class="param-lbl">
+                <svg class="param-micro-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v9l5 3"></path></svg>
+                Power Factor
+              </span>
+              <span class="param-val" id="feederPf{{ f.id }}">{{ "%.2f"|format(f.power_factor) }}</span>
+            </div>
+          </div>
+
+          <div class="feeder-card-footer">
+            <span class="view-details-action">
+              <span>View Details</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </span>
+          </div>
+        </a>
+        {% endfor %}
+      {% else %}
+        <div class="feeder-card skeleton-card">Loading feeders...</div>
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       5. SOLAR-B & BESS-B DISTRIBUTED ENERGY ASSETS
+       ========================================================== -->
+  <section class="bus-der-section" aria-label="Distributed Energy Resources Connected to BUS-2">
+    <div class="section-header-row">
+      <div class="section-title-wrap">
+        <h2 class="section-main-heading">DISTRIBUTED ENERGY RESOURCES (BUS-2)</h2>
+        <span class="section-count-badge">Solar-B (420 kW) &amp; BESS-B</span>
+      </div>
+      <div class="section-annotation">Click asset card to view dedicated plant telemetry</div>
+    </div>
+
+    <div class="der-assets-grid">
+      
+      <!-- SOLAR-B CARD -->
+      {% if data and data.solar_b %}
+      <a href="{{ data.solar_b.route }}" class="der-card solar-card" id="cardSolarB" title="View Solar-B Analytics" aria-label="Solar-B Photovoltaic Array - Click for Details">
+        <div class="card-accent-stripe amber" aria-hidden="true"></div>
+        <div class="der-card-header">
+          <div class="der-identity">
+            <div class="der-icon-wrap solar" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2"></path>
+                <path d="M12 20v2"></path>
+                <path d="M4.93 4.93l1.41 1.41"></path>
+                <path d="M17.66 17.66l1.41 1.41"></path>
+                <path d="M2 12h2"></path>
+                <path d="M20 12h2"></path>
+                <path d="M6.34 17.66l-1.41 1.41"></path>
+                <path d="M19.07 4.93l-1.41 1.41"></path>
+              </svg>
+            </div>
+            <div class="der-title-block">
+              <span class="der-main-name">SOLAR-B</span>
+              <span class="der-sub-type">420 kW Installed Capacity</span>
+            </div>
+          </div>
+          <span id="solarBStatusBadge" class="bus-live-badge {{ 'active' if data.solar_b.status == 'ACTIVE' else 'inactive' }}">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <span>{{ data.solar_b.status }}</span>
+          </span>
+        </div>
+
+        <!-- Solar Generation Big Value -->
+        <div class="der-primary-metric-box">
+          <span class="param-lbl">Current Generation</span>
+          <div class="der-big-val-wrap">
+            <span class="der-big-val text-green" id="solarBGenVal">{{ "%.1f"|format(data.solar_b.generation_kw) }}</span>
+            <span class="der-big-unit">kW</span>
+          </div>
+        </div>
+
+        <!-- Secondary Solar Parameters -->
+        <div class="der-params-list">
+          <div class="der-param-row">
+            <span class="der-param-lbl">
+              <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
+              Weather Temperature
+            </span>
+            <span class="der-param-val" id="solarBTempVal">{{ "%.1f"|format(data.solar_b.temperature_c) }} °C</span>
+          </div>
+          <div class="der-param-row">
+            <span class="der-param-lbl">
+              <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22h16"></path><path d="M12 2v20"></path><path d="M6 7h12"></path><path d="M7 13h10"></path></svg>
+              Current Import to Grid
+            </span>
+            <span class="der-param-val" id="solarBGridVal">{{ "%.1f"|format(data.solar_b.grid_import_kw) }} kW</span>
+          </div>
+          <div class="der-param-row">
+            <span class="der-param-lbl">
+              <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="7" width="16" height="10" rx="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line><path d="M6 12l3-3m0 0l3 3m-3-3v6"></path></svg>
+              Current Import to BESS
+            </span>
+            <span class="der-param-val" id="solarBBessVal">{{ "%.1f"|format(data.solar_b.bess_import_kw) }} kW</span>
+          </div>
+        </div>
+
+        <div class="feeder-card-footer">
+          <span class="view-details-action">
+            <span>View Details</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </span>
+        </div>
+      </a>
+      {% endif %}
+
+      <!-- BESS-B CARD -->
+      {% if data and data.bess_b %}
+      <a href="{{ data.bess_b.route }}" class="der-card bess-card" id="cardBessB" title="View BESS-B Analytics" aria-label="BESS-B Battery Storage System - Click for Details">
+        <div class="card-accent-stripe blue" aria-hidden="true"></div>
+        <div class="der-card-header">
+          <div class="der-identity">
+            <div class="der-icon-wrap bess" aria-hidden="true">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="7" width="16" height="10" rx="2"></rect>
+                <line x1="22" y1="11" x2="22" y2="13"></line>
+                <line x1="6" y1="11" x2="6" y2="13"></line>
+                <line x1="10" y1="11" x2="10" y2="13"></line>
+              </svg>
+            </div>
+            <div class="der-title-block">
+              <span class="der-main-name">BESS-B</span>
+              <span class="der-sub-type">2 MWh Battery Energy Storage</span>
+            </div>
+          </div>
+          <span id="bessBStatusBadge" class="bus-live-badge {{ data.bess_b.status.lower() }}">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            <span>{{ data.bess_b.status }}</span>
+          </span>
+        </div>
+
+        <!-- BESS SOC Big Value -->
+        <div class="der-primary-metric-box">
+          <span class="param-lbl">Current SOC (State of Charge)</span>
+          <div class="der-big-val-wrap">
+            <span class="der-big-val" id="bessBSocVal">{{ "%.1f"|format(data.bess_b.soc_pct) }}</span>
+            <span class="der-big-unit">%</span>
+          </div>
+        </div>
+
+        <!-- Visual SOC Gauge / Operating Window Bar -->
+        <div class="soc-progress-container" aria-label="BESS Operating Window 15% to 90%">
+          <div class="soc-bar-header">
+            <span>Operating Window: 15% – 90%</span>
+            <span id="socStatusText">{{ 'Normal' if not data.bess_b.soc_alert else 'Alert: Outside Bounds' }}</span>
+          </div>
+          <div class="soc-bar-track">
+            <div class="soc-bar-fill" id="bessBSocBar" style="width: {{ data.bess_b.soc_pct }}%;"></div>
+          </div>
+          <div class="soc-bar-markers">
+            <span>15% Min</span>
+            <span>50% Nominal</span>
+            <span>90% Max</span>
+          </div>
+        </div>
+
+        <!-- Secondary BESS Parameters -->
+        <div class="der-params-list">
+          <div class="der-param-row">
+            <span class="der-param-lbl">
+              <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              State of Health (SOH)
+            </span>
+            <span class="der-param-val" id="bessBSohVal">{{ "%.1f"|format(data.bess_b.soh_pct) }} %</span>
+          </div>
+          <div class="der-param-row">
+            <span class="der-param-lbl">
+              <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 16l-4-4m0 0l4-4m-4 4h18"></path><path d="M17 8l4 4m0 0l-4 4"></path></svg>
+              BESS Power
+            </span>
+            <span class="der-param-val" id="bessBPowerVal">
+              {{ "%+.1f"|format(data.bess_b.power_kw) }} kW ({{ data.bess_b.status }})
+            </span>
+          </div>
+          <div class="der-param-row">
+            <span class="der-param-lbl">
+              <svg class="param-micro-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+              Dynamic Reserve
+            </span>
+            <span class="der-param-val" id="bessBReserveVal">
+              {{ "%.1f"|format(data.bess_b.dynamic_reserve_kwh) }} kWh ({{ "%.1f"|format(data.bess_b.dynamic_reserve_soc_pct) }}% SOC)
+            </span>
+          </div>
+        </div>
+
+        <div class="feeder-card-footer">
+          <span class="view-details-action">
+            <span>View Details</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </span>
+        </div>
+      </a>
+      {% endif %}
+
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block shell_scripts %}
+<script src="{{ url_for('static', filename='js/bus2.js') }}"></script>
+{% endblock %}

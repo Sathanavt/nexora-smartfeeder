@@ -1,0 +1,38 @@
+{% extends "dashboard_shell.html" %}
+
+{% block title %}SmartFeeder EMS — {{ page_title }}{% endblock %}
+{% block breadcrumb_title %}{{ page_title }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="home-container">
+  
+  <div class="child-view-header">
+    <a href="{{ back_url or '/' }}" class="btn-back-breadcrumb" title="Return to Home Dashboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to Home Dashboard</span>
+    </a>
+  </div>
+
+  <section class="placeholder-card-module">
+    <div class="placeholder-icon-wrap" aria-hidden="true">
+      <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+      </svg>
+    </div>
+    <h1 class="placeholder-module-title">{{ module_name }}</h1>
+    <p class="placeholder-module-sub">Detailed analytical subsystem for 11 kV Feeder Level Energy Management.</p>
+    
+    <div class="placeholder-callout">
+      <p>This module will be fully implemented in the next phase of the Schneider Yuva Yodha competition development.</p>
+    </div>
+
+    <a href="/" class="btn-return-home">Return to Home Dashboard</a>
+  </section>
+
+</div>
+{% endblock %}

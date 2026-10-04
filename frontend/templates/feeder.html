@@ -1,0 +1,243 @@
+{% extends "dashboard_shell.html" %}
+
+{% block title %}{{ feeder.name }} Detailed Demand Analysis | SmartFeeder EMS{% endblock %}
+{% block breadcrumb_title %}{{ feeder.name }}{% endblock %}
+
+{% block shell_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/feeder.css') }}">
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="feeder-analysis-container" data-feeder-id="{{ feeder.id }}" data-feeder-name="{{ feeder.name }}">
+
+  <!-- ==========================================================
+       1. TOP NAVIGATION & SEQUENTIAL BACK BUTTON
+       ========================================================== -->
+  <nav class="feeder-top-nav" aria-label="Page Navigation">
+    <a href="{{ feeder.bus_route }}" class="btn-back-bus" id="btnBackToBus" title="Return to {{ feeder.bus }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>← Back to {{ feeder.bus }}</span>
+    </a>
+
+    <div class="feeder-breadcrumb-path">
+      <a href="/" title="Home Dashboard">Home</a>
+      <span class="crumb-separator">/</span>
+      <a href="{{ feeder.bus_route }}" title="{{ feeder.bus }}">{{ feeder.bus }}</a>
+      <span class="crumb-separator">/</span>
+      <span class="crumb-current">{{ feeder.name }}</span>
+    </div>
+  </nav>
+
+  <!-- ==========================================================
+       2. PAGE HEADING BANNER
+       ========================================================== -->
+  <header class="feeder-heading-banner">
+    <div class="feeder-title-group">
+      <div class="feeder-category-tag">11 kV DISTRIBUTION FEEDER</div>
+      <div class="feeder-title-row">
+        <h1 class="feeder-main-title" id="feederMainHeading">{{ feeder.name }}</h1>
+        <span class="feeder-type-chip">{{ feeder.type }}</span>
+      </div>
+      <p class="feeder-subtitle">11 kV Feeder Demand Analysis</p>
+    </div>
+
+    <div class="feeder-header-meta">
+      <div class="feeder-id-badge" title="Source Data Feed Identifier">
+        <span>ID {{ feeder.source_id }}</span>
+      </div>
+      <div class="system-status-indicator" role="status" aria-live="polite">
+        <span class="status-pulse-ring" aria-hidden="true">
+          <span class="status-pulse-dot"></span>
+        </span>
+        <span class="status-text">LIVE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       3. TOP CONTROL BAR (CALENDAR, ANALYSIS DROPDOWN, EXCEL)
+       ========================================================== -->
+  <section class="analysis-control-bar" aria-label="Analysis Controls">
+    
+    <!-- LEFT: Standard Unrestricted Calendar / Date Picker -->
+    <div class="control-left-group">
+      <span class="control-label">TELEMETRY DATE:</span>
+      <div class="calendar-input-wrap">
+        <span class="calendar-icon-indicator" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </span>
+        <input
+          type="date"
+          id="feederDatePicker"
+          class="calendar-date-picker"
+          value="{{ default_date }}"
+          title="Select any date for feeder demand analysis"
+          aria-label="Select Telemetry Date"
+        >
+      </div>
+      <span id="feederDateBadge" class="date-display-badge">29 Sep 2026</span>
+    </div>
+
+    <!-- RIGHT: Analysis Dropdown & Download Excel -->
+    <div class="control-right-group">
+      <div class="dropdown-wrap">
+        <label for="analysisSelect" class="control-label">ANALYSIS VIEW:</label>
+        <select id="analysisSelect" class="analysis-select" aria-label="Select Analysis Visualization">
+          <option value="actual" selected>Actual Demand vs Time</option>
+          <option value="forecast">Forecasted Demand vs Time</option>
+          <option value="comparison">Actual vs Forecasted Demand</option>
+        </select>
+      </div>
+
+      <button id="btnDownloadExcel" class="btn-download-excel" title="Download Hourly and Summary Data as Excel">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Download Excel</span>
+      </button>
+    </div>
+
+  </section>
+
+  <!-- ==========================================================
+       4. PRIMARY ANALYSIS CARD (DYNAMIC BAR CHART / EMPTY STATE)
+       ========================================================== -->
+  <section class="primary-chart-card" aria-label="Feeder Demand Chart">
+    
+    <div class="chart-card-header">
+      <div class="chart-title-block">
+        <h2 class="chart-main-title" id="chartMainTitle">Actual Demand vs Time</h2>
+        <span class="chart-subtitle" id="chartSubtitle">24-Hour Profile for {{ feeder.name }} (kW)</span>
+      </div>
+
+      <div class="chart-header-actions">
+        <!-- Series Legend (Visible in Comparison Mode) -->
+        <div class="chart-series-legend" id="chartSeriesLegend" style="display: none;" aria-hidden="true">
+          <div class="legend-item">
+            <span class="legend-dot actual"></span>
+            <span>Actual</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot forecast"></span>
+            <span>Forecast</span>
+          </div>
+        </div>
+
+        <span class="chart-date-chip" id="chartDateChip">29 Sep 2026</span>
+      </div>
+    </div>
+
+    <!-- Active Chart Container -->
+    <div class="chart-canvas-container" id="chartCanvasWrapper">
+      <canvas id="feederDemandChart"></canvas>
+    </div>
+
+    <!-- Empty State: DATA NOT AVAILABLE (For dates outside dataset range) -->
+    <div class="data-unavailable-state" id="feederEmptyState" role="alert" aria-live="polite">
+      <div class="empty-state-icon-wrap" aria-hidden="true">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <h3 class="empty-state-title" id="emptyStateTitle">DATA NOT AVAILABLE</h3>
+      <p class="empty-state-sub" id="emptyStateSub">
+        No actual {{ feeder.name }} data is available for selected date.
+      </p>
+      <div class="empty-state-info-box" id="emptyStateInfoBox">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        <span id="emptyStateInfo">Actual feeder data is available from 05-Aug-2026 onwards.</span>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ==========================================================
+       5. DAILY SUMMARY KPI CARDS
+       ========================================================== -->
+  <section class="daily-summary-section" aria-label="Daily Demand Key Performance Indicators">
+    <div class="daily-summary-grid">
+      
+      <!-- 1. Peak Demand -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">PEAK DEMAND</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number text-green" id="summaryPeakDemand">--.--</span>
+          <span class="stat-big-unit">kW</span>
+        </div>
+        <div class="stat-card-sub">Maximum hourly load for the day</div>
+      </div>
+
+      <!-- 2. Peak Demand Time -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">PEAK DEMAND TIME</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number" id="summaryPeakTime">--:--</span>
+        </div>
+        <div class="stat-card-sub">Hour of maximum feeder demand</div>
+      </div>
+
+      <!-- 3. Peak Demand Duration -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">PEAK DEMAND DURATION</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number" id="summaryPeakDuration">--</span>
+        </div>
+        <div class="stat-card-sub">
+          Threshold: &ge; 90% (<strong id="summaryPeakThreshold">--.--</strong> kW)
+        </div>
+      </div>
+
+      <!-- 4. Daily Energy Demand -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">DAILY ENERGY</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number" id="summaryDailyEnergy">--.-</span>
+          <span class="stat-big-unit">kWh</span>
+        </div>
+        <div class="stat-card-sub">24-Hour Integrated Energy Demand</div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+{% endblock %}
+
+{% block shell_scripts %}
+<!-- Offline Standalone Chart.js 4.4.1 -->
+<script src="{{ url_for('static', filename='js/chart.umd.min.js') }}"></script>
+<!-- Master Feeder Analysis Controller -->
+<script src="{{ url_for('static', filename='js/feeder.js') }}"></script>
+{% endblock %}

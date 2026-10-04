@@ -1,0 +1,1146 @@
+/* ==========================================================
+   SmartFeeder EMS — Authenticated Dashboard Shell & Home CSS
+   Enterprise MNC Industrial Architecture (Schneider-Grade Standard)
+   ========================================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: transparent;
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Master Dashboard Shell Container */
+.dashboard-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  position: relative;
+}
+
+/* ==========================================================
+   1. GLOBAL ENTERPRISE HEADER
+   ========================================================== */
+.dashboard-header {
+  height: 66px;
+  background: var(--surface-card-translucent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.04);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Header Left: Engineered Branding */
+.header-brand-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.header-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.brand-emblem-mini {
+  width: 38px;
+  height: 38px;
+  background-color: #FFFFFF;
+  border: 1px solid var(--brand-green-border);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 132, 61, 0.12);
+  transition: transform var(--transition-fast);
+}
+
+.brand-emblem-mini:hover {
+  transform: scale(1.04);
+}
+
+.brand-emblem-mini svg {
+  width: 26px;
+  height: 26px;
+}
+
+.brand-text-block {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.brand-text-block .brand-title {
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.brand-text-block .brand-accent {
+  color: var(--brand-green-primary);
+  font-weight: 900;
+}
+
+.brand-text-block .brand-tagline {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* Header Center: Breadcrumb */
+.header-nav-center {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-full);
+}
+
+.breadcrumb-item.active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.breadcrumb-item svg {
+  color: var(--brand-green-primary);
+}
+
+/* Header Right: Status, User, Logout */
+.header-right-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+/* Subtle Pulsing Live Indicator */
+.system-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--brand-green-light);
+  border: 1px solid var(--brand-green-border);
+  padding: 0.32rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.status-pulse-ring {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--brand-green-primary);
+  box-shadow: 0 0 0 0 rgba(0, 132, 61, 0.7);
+  animation: pulse-live-ring 2.2s infinite ease-out;
+}
+
+@keyframes pulse-live-ring {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 132, 61, 0.7);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 6px rgba(0, 132, 61, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(0, 132, 61, 0);
+  }
+}
+
+.system-status-indicator .status-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--brand-green-primary);
+  letter-spacing: 0.06em;
+  font-family: var(--font-mono);
+}
+
+/* User Account Chip */
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  padding: 0.32rem 0.75rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+}
+
+.user-avatar-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.user-chip-admin {
+  cursor: pointer;
+  border-color: rgba(0, 132, 61, 0.25);
+}
+
+.user-chip-admin:hover {
+  background: var(--brand-green-light);
+  border-color: var(--brand-green-primary);
+  color: var(--brand-green-primary);
+}
+
+.user-chip-admin:hover .user-avatar-badge {
+  color: var(--brand-green-primary);
+}
+
+.user-role-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: var(--brand-green-light);
+  color: var(--brand-green-primary);
+  padding: 0.1rem 0.4rem;
+  border-radius: var(--radius-xs);
+  letter-spacing: 0.04em;
+}
+
+.user-chip-static {
+  cursor: default;
+}
+
+/* Shell Logout Action */
+.btn-shell-logout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  padding: 0.38rem 0.8rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+}
+
+.btn-shell-logout:hover {
+  color: var(--accent-red);
+  background: var(--accent-red-light);
+  border-color: var(--accent-red-border);
+}
+
+/* ==========================================================
+   2. CONTENT LAYOUT CONTAINER
+   ========================================================== */
+.dashboard-main-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1.75rem 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.home-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ==========================================================
+   3. PAGE TITLE BANNER
+   ========================================================== */
+.page-title-banner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.title-text-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.substation-category-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-green-primary);
+}
+
+.page-heading {
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.page-subheading {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.telemetry-timestamp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+}
+
+.ts-status-dot-pulse {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-green-primary);
+}
+
+.ts-text-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.ts-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+.ts-value {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.btn-refresh {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
+  border-radius: var(--radius-xs);
+  transition: all var(--transition-fast);
+}
+
+.btn-refresh:hover {
+  color: var(--brand-green-primary);
+  background: var(--brand-green-light);
+  transform: rotate(45deg);
+}
+
+/* Error Banner */
+.home-error-banner {
+  background: var(--accent-red-light);
+  border: 1px solid var(--accent-red-border);
+  color: var(--accent-red);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.error-msg-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.btn-retry-action {
+  background: var(--accent-red);
+  color: #FFFFFF;
+  border: none;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ==========================================================
+   4. PRIMARY ROW: 3 MAJOR MODULE CARDS
+   (BUS-1 STATUS | BUS-2 STATUS | EMS STATUS)
+   ========================================================== */
+.major-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.major-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.major-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(0, 132, 61, 0.4);
+}
+
+/* Top Accent Stripe per Module */
+.card-accent-stripe {
+  height: 3px;
+  width: 100%;
+}
+
+.card-accent-stripe.green {
+  background: linear-gradient(90deg, #00843D, #00A84D);
+}
+
+.card-accent-stripe.blue {
+  background: linear-gradient(90deg, #1D4ED8, #00843D);
+}
+
+/* Card Header Area */
+.major-card-header {
+  padding: 1.25rem 1.4rem 0.85rem;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.card-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.card-bus-code {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.card-main-title {
+  font-size: 1.28rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.card-bus-type {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+/* Live / Active Chip Badges */
+.card-live-chip,
+.card-active-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--brand-green-light);
+  border: 1px solid var(--brand-green-border);
+  color: var(--brand-green-primary);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.22rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+.chip-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--brand-green-primary);
+  animation: pulse-live-dot 2s infinite;
+}
+
+@keyframes pulse-live-dot {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Card Body */
+.major-card-body {
+  padding: 0 1.4rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  flex: 1;
+}
+
+/* Recessed Hero Metric Block: CURRENT BUS DEMAND */
+.primary-metric-block {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.metric-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.param-micro-icon {
+  color: var(--brand-green-primary);
+  flex-shrink: 0;
+}
+
+.metric-value-wrap {
+  display: flex;
+  align-items: baseline;
+  margin-top: 0.35rem;
+}
+
+.metric-number {
+  font-size: 2.85rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1;
+  font-feature-settings: 'tnum';
+}
+
+.metric-unit {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--brand-green-primary);
+  margin-left: 0.35rem;
+  transform: translateY(-0.25rem);
+}
+
+/* 3-Column Electrical Parameters Strip (Digital Console) */
+.electrical-parameters-strip {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.param-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.15rem;
+}
+
+.param-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.param-val-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.2rem;
+}
+
+.param-value {
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.param-unit {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.param-divider {
+  width: 1px;
+  height: 32px;
+  background: var(--border-light);
+}
+
+/* Sub-Status Row (Solar & BESS Modules) */
+.sub-status-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.status-indicator-box {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.65rem 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status-indicator-box.solar-module {
+  border-left: 3px solid var(--accent-amber);
+}
+
+.status-indicator-box.bess-module {
+  border-left: 3px solid var(--accent-blue);
+}
+
+.indicator-header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.indicator-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.solar-icon-sm {
+  color: var(--accent-amber);
+  display: flex;
+}
+
+.bess-icon-sm {
+  color: var(--accent-blue);
+  display: flex;
+}
+
+.indicator-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-full);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+}
+
+.indicator-badge .badge-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent-neutral);
+}
+
+.indicator-badge.active,
+.indicator-badge.discharging,
+.indicator-badge.charging {
+  background: var(--brand-green-light);
+  border-color: var(--brand-green-border);
+  color: var(--brand-green-primary);
+}
+
+.indicator-badge.active .badge-dot,
+.indicator-badge.discharging .badge-dot,
+.indicator-badge.charging .badge-dot {
+  background: var(--brand-green-primary);
+}
+
+/* EMS Card Specifics */
+.ems-mode-block {
+  background: var(--brand-green-subtle);
+  border-color: var(--brand-green-border);
+}
+
+.operating-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #FFFFFF;
+  border: 1px solid var(--brand-green-border);
+  color: var(--brand-green-primary);
+  font-size: 0.88rem;
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-sm);
+  margin-top: 0.35rem;
+  box-shadow: var(--shadow-xs);
+}
+
+.mode-bolt-icon {
+  color: var(--brand-green-primary);
+  display: flex;
+}
+
+.ems-metrics-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.ems-metric-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+.ems-metric-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.ems-metric-value-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+}
+
+.ems-metric-val {
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.ems-metric-unit {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.ems-metric-row.highlight-row {
+  background: var(--brand-green-light);
+  border-color: var(--brand-green-border);
+}
+
+.ems-metric-row.highlight-row .ems-metric-val {
+  color: var(--brand-green-primary);
+}
+
+/* Card Footer Action */
+.major-card-footer {
+  border-top: 1px solid var(--border-light);
+  padding: 0.85rem 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+}
+
+.card-action-text {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brand-green-primary);
+  letter-spacing: 0.01em;
+}
+
+.action-arrow {
+  color: var(--brand-green-primary);
+  transition: transform var(--transition-fast);
+}
+
+.major-card:hover .action-arrow {
+  transform: translateX(4px);
+}
+
+/* ==========================================================
+   5. SECONDARY OVERVIEW SECTION (5 KPI MODULE CARDS)
+   ========================================================== */
+.secondary-overview-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin-top: 0.25rem;
+}
+
+.secondary-section-title-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.secondary-section-heading {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.secondary-section-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.secondary-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.15rem;
+}
+
+.summary-metric-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.15rem;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.summary-metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px -2px rgba(15, 23, 42, 0.06);
+}
+
+.card-top-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.summary-metric-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.metric-icon-wrap {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+}
+
+.solar-icon {
+  background: var(--accent-amber-light);
+  border-color: var(--accent-amber-border);
+  color: var(--accent-amber);
+}
+
+.grid-icon {
+  background: var(--surface-subtle);
+  border-color: var(--border-medium);
+  color: var(--text-secondary);
+}
+
+.bess-icon {
+  background: var(--accent-blue-light);
+  border-color: var(--accent-blue-border);
+  color: var(--accent-blue);
+}
+
+.summary-metric-body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-top: 0.65rem;
+}
+
+.summary-number {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  line-height: 1.1;
+  font-feature-settings: 'tnum';
+}
+
+.text-amber {
+  color: var(--accent-amber);
+}
+
+.text-blue {
+  color: var(--accent-blue);
+}
+
+.summary-unit {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.summary-card-sub {
+  font-size: 0.7rem;
+  color: var(--text-faint);
+  margin-top: 0.35rem;
+}
+
+/* Horizontal SOC Window Gauge */
+.soc-window-gauge {
+  margin-top: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.gauge-track {
+  width: 100%;
+  height: 6px;
+  background: #E2E8F0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+  position: relative;
+}
+
+.gauge-window-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1D4ED8, #00843D);
+  border-radius: var(--radius-full);
+  transition: width 0.6s ease;
+}
+
+.gauge-bounds-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.62rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.window-target-text {
+  color: var(--brand-green-primary);
+  font-weight: 700;
+}
+
+/* ==========================================================
+   6. BOTTOM SUBSTATION STATUS CONSOLE STRIP
+   ========================================================== */
+.system-status-strip {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-card);
+}
+
+.status-strip-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.strip-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.strip-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-muted);
+}
+
+.strip-badge .strip-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.strip-badge.online {
+  background: var(--brand-green-light);
+  border-color: var(--brand-green-border);
+  color: var(--brand-green-primary);
+}
+
+.strip-badge.online .strip-dot {
+  background: var(--brand-green-primary);
+  box-shadow: 0 0 4px rgba(0, 132, 61, 0.5);
+}
+
+.strip-separator {
+  width: 1px;
+  height: 20px;
+  background: var(--border-light);
+}
+
+/* ==========================================================
+   7. FOOTER
+   ========================================================== */
+.dashboard-footer {
+  border-top: 1px solid var(--border-light);
+  background: var(--surface-card-translucent);
+  backdrop-filter: blur(8px);
+  padding: 1.1rem 2rem;
+  margin-top: auto;
+}
+
+.footer-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-credit {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.footer-credit strong {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.footer-substation-tag {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Skeleton Loading State helper */
+.skeleton-text {
+  transition: opacity 0.2s ease;
+}
+
+/* ==========================================================
+   8. RESPONSIVE BREAKPOINTS
+   ========================================================== */
+@media (max-width: 1200px) {
+  .major-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .secondary-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-header {
+    padding: 0 1rem;
+  }
+  .dashboard-main-content {
+    padding: 1rem;
+  }
+  .header-nav-center {
+    display: none;
+  }
+  .secondary-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .system-status-strip {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .strip-separator {
+    display: none;
+  }
+}

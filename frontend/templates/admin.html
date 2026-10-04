@@ -1,0 +1,279 @@
+{% extends "dashboard_shell.html" %}
+
+{% block title %}SmartFeeder EMS — Admin Control{% endblock %}
+{% block breadcrumb_title %}Admin Control{% endblock %}
+
+{% block shell_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="admin-container">
+  
+  <!-- Navigation & Back Button -->
+  <div class="admin-top-nav">
+    <a href="/" class="btn-back-home" title="Return to Home Dashboard">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to Home</span>
+    </a>
+
+    <div class="admin-breadcrumb-path">
+      <a href="/">Home</a>
+      <span class="crumb-separator">/</span>
+      <span class="crumb-current">Admin Control</span>
+    </div>
+  </div>
+
+  <!-- Page Header -->
+  <section class="admin-title-banner">
+    <div class="admin-title-text">
+      <h1 class="page-heading">ADMIN CONTROL</h1>
+      <p class="page-subheading">User and Credential Management • 11 kV EMS Access Control</p>
+    </div>
+
+    <button id="openAddUserModalBtn" class="btn-primary-action">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <span>Add User</span>
+    </button>
+  </section>
+
+  <!-- Notification Banner -->
+  <div id="adminAlertBanner" class="admin-alert-banner" style="display: none;" role="alert">
+    <div class="alert-content">
+      <svg id="alertIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span id="adminAlertMsg">Notification message</span>
+    </div>
+    <button id="closeAlertBtn" class="btn-alert-close" aria-label="Close notification">&times;</button>
+  </div>
+
+  <!-- Two-Column Grid: Users Table + Admin Account Self-Management -->
+  <div class="admin-content-grid">
+    
+    <!-- LEFT: User Management Card -->
+    <section class="admin-card user-management-card">
+      <div class="admin-card-header">
+        <div class="card-header-left">
+          <h2 class="card-heading">USER MANAGEMENT</h2>
+          <p class="card-subheading">Authorized Operator & Supervisor Accounts</p>
+        </div>
+        <div class="user-count-badge" id="userCountBadge">Loading users...</div>
+      </div>
+
+      <!-- Users Table -->
+      <div class="table-responsive">
+        <table class="users-table" id="usersTable">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th class="th-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr>
+              <td colspan="4" class="td-loading">Loading authorized accounts...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- RIGHT: Admin Self-Management Card -->
+    <section class="admin-card admin-self-card">
+      <div class="admin-card-header">
+        <h2 class="card-heading">ADMIN ACCOUNT</h2>
+        <p class="card-subheading">Update Administrator Credentials</p>
+      </div>
+
+      <form id="adminPasswordForm" class="admin-form" novalidate>
+        <div class="form-group">
+          <label class="form-label">Current Administrator</label>
+          <div class="static-input-display">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>{{ user.username if user else 'admin' }} (Active)</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="currentAdminPassword" class="form-label">Current Password</label>
+          <input type="password" id="currentAdminPassword" class="form-control" placeholder="Enter current password" required>
+        </div>
+
+        <div class="form-group">
+          <label for="newAdminPassword" class="form-label">New Password</label>
+          <input type="password" id="newAdminPassword" class="form-control" placeholder="Enter new password (min. 6 chars)" required>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmAdminPassword" class="form-label">Confirm New Password</label>
+          <input type="password" id="confirmAdminPassword" class="form-control" placeholder="Re-enter new password" required>
+        </div>
+
+        <button type="submit" id="submitAdminPasswordBtn" class="btn-submit-action">
+          <span>Change Password</span>
+        </button>
+      </form>
+    </section>
+
+  </div>
+
+</div>
+
+<!-- ==========================================================
+     MODAL: Add User
+     ========================================================== -->
+<div id="addUserModal" class="admin-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="addUserModalTitle">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="addUserModalTitle" class="modal-title">Add Authorized User</h3>
+        <button type="button" class="btn-modal-close" data-close="addUserModal" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <form id="addUserForm" class="modal-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="newUsername" class="form-label">Username</label>
+            <input type="text" id="newUsername" class="form-control" placeholder="e.g. operator1" required autocomplete="off">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="newUserPassword" class="form-label">Password</label>
+              <input type="password" id="newUserPassword" class="form-control" placeholder="Minimum 6 characters" required>
+            </div>
+            <div class="form-group flex-1">
+              <label for="newUserConfirmPassword" class="form-label">Confirm Password</label>
+              <input type="password" id="newUserConfirmPassword" class="form-control" placeholder="Repeat password" required>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="newUserRole" class="form-label">Role</label>
+              <select id="newUserRole" class="form-control">
+                <option value="USER" selected>USER (Standard Operator)</option>
+                <option value="ENGINEER">ENGINEER (Power / SCADA)</option>
+                <option value="OPERATOR">OPERATOR (Substation)</option>
+                <option value="VIEWER">VIEWER (Read-Only)</option>
+                <option value="ADMIN">ADMIN (Full Supervisory Control)</option>
+              </select>
+            </div>
+            <div class="form-group flex-1">
+              <label for="newUserStatus" class="form-label">Account Status</label>
+              <select id="newUserStatus" class="form-control">
+                <option value="ACTIVE" selected>Active</option>
+                <option value="DISABLED">Disabled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" data-close="addUserModal">Cancel</button>
+          <button type="submit" class="btn-primary" id="saveNewUserBtn">Create Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================
+     MODAL: Edit User
+     ========================================================== -->
+<div id="editUserModal" class="admin-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="editUserModalTitle">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="editUserModalTitle" class="modal-title">Edit User Account</h3>
+        <button type="button" class="btn-modal-close" data-close="editUserModal" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <form id="editUserForm" class="modal-form">
+        <input type="hidden" id="editUserId">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="editUsername" class="form-label">Username</label>
+            <input type="text" id="editUsername" class="form-control" required autocomplete="off">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="editUserRole" class="form-label">Role</label>
+              <select id="editUserRole" class="form-control">
+                <option value="USER">USER</option>
+                <option value="ENGINEER">ENGINEER</option>
+                <option value="OPERATOR">OPERATOR</option>
+                <option value="VIEWER">VIEWER</option>
+                <option value="ADMIN">ADMIN</option>
+              </select>
+            </div>
+            <div class="form-group flex-1">
+              <label for="editUserStatus" class="form-label">Status</label>
+              <select id="editUserStatus" class="form-control">
+                <option value="ACTIVE">Active</option>
+                <option value="DISABLED">Disabled</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" data-close="editUserModal">Cancel</button>
+          <button type="submit" class="btn-primary" id="saveEditUserBtn">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================
+     MODAL: Reset Password
+     ========================================================== -->
+<div id="resetPasswordModal" class="admin-modal" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="resetPasswordModalTitle">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="resetPasswordModalTitle" class="modal-title">Reset User Password</h3>
+        <button type="button" class="btn-modal-close" data-close="resetPasswordModal" aria-label="Close dialog">&times;</button>
+      </div>
+
+      <form id="resetPasswordForm" class="modal-form">
+        <input type="hidden" id="resetUserId">
+        <div class="modal-body">
+          <div class="info-note">
+            Resetting password for: <strong id="resetTargetUsername">username</strong>
+          </div>
+
+          <div class="form-group">
+            <label for="resetNewPassword" class="form-label">New Password</label>
+            <input type="password" id="resetNewPassword" class="form-control" placeholder="Minimum 6 characters" required>
+          </div>
+
+          <div class="form-group">
+            <label for="resetConfirmPassword" class="form-label">Confirm New Password</label>
+            <input type="password" id="resetConfirmPassword" class="form-control" placeholder="Re-enter new password" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" data-close="resetPasswordModal">Cancel</button>
+          <button type="submit" class="btn-primary" id="saveResetPasswordBtn">Reset Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block shell_scripts %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

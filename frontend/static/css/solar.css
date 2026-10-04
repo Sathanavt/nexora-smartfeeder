@@ -1,0 +1,745 @@
+/* ==========================================================
+   SmartFeeder EMS — Solar Detailed Generation Analysis CSS
+   Enterprise MNC Industrial Architecture (Schneider-Grade Standard)
+   ========================================================== */
+
+.solar-analysis-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ==========================================================
+   1. TOP NAVIGATION & SEQUENTIAL BACK BUTTON
+   ========================================================== */
+.solar-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-back-bus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brand-green-primary, #00843D);
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05));
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.btn-back-bus:hover {
+  background: var(--brand-green-light, #EBF6F0);
+  border-color: var(--brand-green-border-strong, #86EFAC);
+  transform: translateX(-3px);
+  box-shadow: 0 2px 6px rgba(0, 132, 61, 0.15);
+}
+
+.btn-back-bus svg {
+  transition: transform var(--transition-fast, 0.15s ease);
+}
+
+.btn-back-bus:hover svg {
+  transform: translateX(-2px);
+}
+
+.solar-breadcrumb-path {
+  font-size: 0.8125rem;
+  color: var(--text-muted, #94A3B8);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.solar-breadcrumb-path a {
+  color: var(--text-secondary, #475569);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast, 0.15s ease);
+}
+
+.solar-breadcrumb-path a:hover {
+  color: var(--brand-green-primary, #00843D);
+}
+
+.crumb-separator {
+  color: var(--border-medium, #CBD5E1);
+}
+
+.crumb-current {
+  font-weight: 700;
+  color: var(--text-primary, #0F172A);
+  font-family: var(--font-mono, monospace);
+}
+
+/* ==========================================================
+   2. PAGE HEADING BANNER
+   ========================================================== */
+.solar-heading-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.25rem 1.85rem;
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.05));
+  position: relative;
+  overflow: hidden;
+}
+
+.solar-heading-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #D97706 0%, #F59E0B 100%);
+}
+
+.solar-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.solar-category-tag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #B45309;
+  text-transform: uppercase;
+}
+
+.solar-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.solar-main-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.solar-capacity-chip {
+  display: inline-flex;
+  align-items: center;
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.solar-subtitle {
+  font-size: 0.825rem;
+  color: var(--text-secondary, #475569);
+  margin: 0;
+}
+
+.solar-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.solar-id-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-surface-secondary, #F8FAFC);
+  border: 1px solid var(--border-medium, #CBD5E1);
+  color: var(--text-secondary, #475569);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md, 8px);
+}
+
+/* ==========================================================
+   3. CURRENT SOLAR TELEMETRY STRIP (COMPACT SNAPSHOT)
+   ========================================================== */
+.solar-telemetry-strip {
+  width: 100%;
+}
+
+.telemetry-strip-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+}
+
+.telemetry-snap-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-md, 8px);
+  padding: 0.95rem 1.15rem;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05));
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  position: relative;
+  transition: transform var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease);
+}
+
+.telemetry-snap-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.snap-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #64748B);
+  text-transform: uppercase;
+}
+
+.snap-val-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.snap-val {
+  font-size: 1.45rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary, #0F172A);
+  line-height: 1.1;
+}
+
+.snap-val.text-green {
+  color: var(--brand-green-primary, #00843D);
+}
+
+.snap-val.text-blue {
+  color: #1D4ED8;
+}
+
+.snap-unit {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary, #64748B);
+}
+
+.snap-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted, #94A3B8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.snap-status-wrap {
+  display: flex;
+  align-items: center;
+  height: 1.6rem;
+}
+
+.solar-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.solar-status-pill.active {
+  background: #EBF6F0;
+  color: #00843D;
+  border: 1px solid #86EFAC;
+}
+
+.solar-status-pill.inactive {
+  background: #F1F5F9;
+  color: #64748B;
+  border: 1px solid #CBD5E1;
+}
+
+.pill-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.solar-status-pill.active .pill-dot {
+  background: #00843D;
+  box-shadow: 0 0 6px rgba(0, 132, 61, 0.6);
+}
+
+/* ==========================================================
+   4. TOP CONTROL BAR (CALENDAR, ANALYSIS DROPDOWN, EXCEL)
+   ========================================================== */
+.analysis-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 0.9rem 1.5rem;
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.05));
+}
+
+.control-left-group,
+.control-right-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.control-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary, #475569);
+  text-transform: uppercase;
+}
+
+.calendar-input-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.calendar-icon-indicator {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--text-secondary, #64748B);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+}
+
+.calendar-date-picker {
+  padding: 0.45rem 0.85rem 0.45rem 2.35rem;
+  font-size: 0.85rem;
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  color: var(--text-primary, #0F172A);
+  background: var(--bg-surface-secondary, #F8FAFC);
+  border: 1px solid var(--border-medium, #CBD5E1);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.calendar-date-picker:hover {
+  background: #FFFFFF;
+  border-color: var(--brand-green-primary, #00843D);
+}
+
+.calendar-date-picker:focus {
+  outline: none;
+  border-color: var(--brand-green-primary, #00843D);
+  box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.12);
+  background: #FFFFFF;
+}
+
+.date-display-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--brand-green-primary, #00843D);
+  background: var(--brand-green-light, #EBF6F0);
+  border: 1px solid var(--brand-green-border-strong, #86EFAC);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md, 8px);
+}
+
+.dropdown-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.analysis-select {
+  padding: 0.45rem 2rem 0.45rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary, #0F172A);
+  background: var(--bg-surface-secondary, #F8FAFC) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 0.75rem center;
+  border: 1px solid var(--border-medium, #CBD5E1);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  appearance: none;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.analysis-select:hover {
+  background-color: #FFFFFF;
+  border-color: var(--brand-green-primary, #00843D);
+}
+
+.analysis-select:focus {
+  outline: none;
+  border-color: var(--brand-green-primary, #00843D);
+  box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.12);
+  background-color: #FFFFFF;
+}
+
+.btn-download-excel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.48rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: var(--brand-green-primary, #00843D);
+  border: 1px solid var(--brand-green-hover, #006E33);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05));
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.btn-download-excel:hover {
+  background: var(--brand-green-hover, #006E33);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 132, 61, 0.25);
+}
+
+.btn-download-excel:active {
+  transform: translateY(0);
+}
+
+/* ==========================================================
+   5. PRIMARY ANALYSIS CARD (DYNAMIC BAR CHART / EMPTY STATE)
+   ========================================================== */
+.primary-chart-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.5rem 1.85rem;
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.05));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-height: 480px;
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light, #E2E8F0);
+  padding-bottom: 1rem;
+}
+
+.chart-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.section-tag-mini {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #B45309;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.section-select-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary, #475569);
+  text-transform: uppercase;
+}
+
+.chart-main-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.chart-subtitle {
+  font-size: 0.8125rem;
+  color: var(--text-secondary, #475569);
+}
+
+.chart-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.chart-series-legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--bg-surface-secondary, #F8FAFC);
+  border: 1px solid var(--border-medium, #CBD5E1);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-md, 8px);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary, #475569);
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.legend-dot.actual {
+  background: var(--brand-green-primary, #00843D);
+}
+
+.legend-dot.secondary {
+  background: #1D4ED8;
+}
+
+.legend-dot.utilized {
+  background: #0284C7;
+}
+
+.chart-date-chip {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary, #475569);
+  background: var(--bg-surface-secondary, #F8FAFC);
+  border: 1px solid var(--border-medium, #CBD5E1);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md, 8px);
+}
+
+.chart-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 380px;
+}
+
+/* Empty State / Data Unavailable */
+.data-unavailable-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  margin: auto 0;
+}
+
+.data-unavailable-state.visible {
+  display: flex;
+}
+
+.empty-state-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #DC2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.empty-state-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: 0.02em;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state-sub {
+  font-size: 0.92rem;
+  color: var(--text-secondary, #475569);
+  margin: 0 0 1.25rem 0;
+}
+
+.empty-state-info-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md, 8px);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+}
+
+.empty-state-info-box svg {
+  color: var(--brand-green-primary, #00843D);
+  flex-shrink: 0;
+}
+
+/* ==========================================================
+   6. DAILY SUMMARY KPI CARDS
+   ========================================================== */
+.daily-summary-section {
+  width: 100%;
+}
+
+.daily-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.summary-stat-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.05));
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease);
+}
+
+.summary-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.stat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #64748B);
+  text-transform: uppercase;
+}
+
+.stat-card-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md, 8px);
+  background: var(--bg-surface-secondary, #F8FAFC);
+  border: 1px solid var(--border-light, #E2E8F0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary, #475569);
+}
+
+.stat-card-body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.stat-big-number {
+  font-size: 2rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary, #0F172A);
+  line-height: 1.1;
+}
+
+.stat-big-number.text-green {
+  color: var(--brand-green-primary, #00843D);
+}
+
+.stat-big-number.text-blue {
+  color: #1D4ED8;
+}
+
+.stat-big-unit {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-secondary, #64748B);
+}
+
+.stat-card-sub {
+  font-size: 0.76rem;
+  color: var(--text-secondary, #475569);
+  line-height: 1.4;
+}
+
+.stat-card-sub strong {
+  color: var(--text-primary, #0F172A);
+  font-family: var(--font-mono, monospace);
+}
+
+/* ==========================================================
+   RESPONSIVE LAYOUT
+   ========================================================== */
+@media (max-width: 1200px) {
+  .telemetry-strip-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .daily-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .solar-heading-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .analysis-control-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .control-left-group,
+  .control-right-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .telemetry-strip-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .daily-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .chart-card-header {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}

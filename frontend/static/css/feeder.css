@@ -1,0 +1,610 @@
+/* ==========================================================
+   SmartFeeder EMS — Feeder Detailed Demand Analysis CSS
+   Enterprise MNC Industrial Architecture (Schneider-Grade Standard)
+   ========================================================== */
+
+.feeder-analysis-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ==========================================================
+   1. TOP NAVIGATION & SEQUENTIAL BACK BUTTON
+   ========================================================== */
+.feeder-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-back-bus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brand-green-primary);
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+}
+
+.btn-back-bus:hover {
+  background: var(--brand-green-light);
+  border-color: var(--brand-green-border-strong);
+  transform: translateX(-3px);
+  box-shadow: 0 2px 6px rgba(0, 132, 61, 0.15);
+}
+
+.btn-back-bus svg {
+  transition: transform var(--transition-fast);
+}
+
+.btn-back-bus:hover svg {
+  transform: translateX(-2px);
+}
+
+.feeder-breadcrumb-path {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.feeder-breadcrumb-path a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.feeder-breadcrumb-path a:hover {
+  color: var(--brand-green-primary);
+}
+
+.crumb-separator {
+  color: var(--border-medium);
+}
+
+.crumb-current {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================
+   2. PAGE HEADING BANNER
+   ========================================================== */
+.feeder-heading-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.85rem;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.feeder-heading-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #00843D, #00B354);
+}
+
+.feeder-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.feeder-category-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-green-primary);
+}
+
+.feeder-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.feeder-main-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.15;
+}
+
+.feeder-type-chip {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--brand-green-light);
+  color: var(--brand-green-primary);
+  border: 1px solid var(--brand-green-border);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-xs);
+}
+
+.feeder-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.feeder-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.feeder-id-badge {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md);
+}
+
+/* ==========================================================
+   3. TOP CONTROL BAR (CALENDAR, DROPDOWN, EXCEL DOWNLOAD)
+   ========================================================== */
+.analysis-control-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 0.85rem 1.4rem;
+  box-shadow: var(--shadow-card);
+  gap: 1.25rem;
+}
+
+/* Left: Datepicker / Calendar */
+.control-left-group {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.control-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.calendar-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.calendar-icon-indicator {
+  position: absolute;
+  left: 0.85rem;
+  color: var(--brand-green-primary);
+  pointer-events: none;
+  display: flex;
+}
+
+.calendar-date-picker {
+  height: 40px;
+  padding: 0 1rem 0 2.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.calendar-date-picker:focus {
+  border-color: var(--brand-green-primary);
+  box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.16);
+  background: #FFFFFF;
+}
+
+.date-display-badge {
+  font-size: 0.78rem;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--brand-green-primary);
+  background: var(--brand-green-light);
+  border: 1px solid var(--brand-green-border);
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Right: Analysis Dropdown & Excel Download */
+.control-right-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.dropdown-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.analysis-select {
+  height: 40px;
+  padding: 0 2.2rem 0 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: #FFFFFF url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 0.85rem center;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+}
+
+.analysis-select:focus {
+  border-color: var(--brand-green-primary);
+  box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.16);
+}
+
+.btn-download-excel {
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--brand-green-primary);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0 1.15rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 132, 61, 0.2);
+  transition: all var(--transition-fast);
+}
+
+.btn-download-excel:hover {
+  background: var(--brand-green-hover);
+  box-shadow: 0 4px 10px rgba(0, 132, 61, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-download-excel:active {
+  background: var(--brand-green-active);
+  transform: translateY(0);
+}
+
+/* ==========================================================
+   4. PRIMARY ANALYSIS CARD (CHART & EMPTY STATE)
+   ========================================================== */
+.primary-chart-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.primary-chart-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #00843D, #00B354);
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.chart-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.chart-main-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.chart-subtitle {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.chart-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+/* Comparison Legend */
+.chart-series-legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radius-full);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+}
+
+.legend-dot.actual {
+  background: #00843D;
+}
+
+.legend-dot.forecast {
+  background: #1D4ED8;
+}
+
+.chart-date-chip {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-light);
+  padding: 0.3rem 0.65rem;
+  border-radius: var(--radius-sm);
+}
+
+/* Chart Canvas Container */
+.chart-canvas-container {
+  width: 100%;
+  height: 440px;
+  position: relative;
+}
+
+/* Empty State: DATA NOT AVAILABLE */
+.data-unavailable-state {
+  display: none;
+  min-height: 420px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--surface-recessed);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-lg);
+  margin: 0.5rem 0;
+}
+
+.data-unavailable-state.active {
+  display: flex;
+}
+
+.empty-state-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--brand-green-light);
+  border: 1px solid var(--brand-green-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-green-primary);
+  margin-bottom: 1.25rem;
+}
+
+.empty-state-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.empty-state-sub {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  max-width: 480px;
+  margin-bottom: 1rem;
+}
+
+.empty-state-info-box {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--brand-green-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: var(--shadow-xs);
+}
+
+/* ==========================================================
+   5. DAILY SUMMARY CARDS GRID (PEAK, DURATION, ENERGY)
+   ========================================================== */
+.daily-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.summary-stat-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.25rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.summary-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px -2px rgba(15, 23, 42, 0.08);
+}
+
+.stat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.stat-card-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  background: var(--brand-green-light);
+  border: 1px solid var(--brand-green-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-green-primary);
+}
+
+.stat-card-body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+
+.stat-big-number {
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1;
+  font-feature-settings: 'tnum';
+}
+
+.stat-big-number.text-green {
+  color: var(--brand-green-primary);
+}
+
+.stat-big-unit {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.stat-card-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 0.45rem;
+}
+
+.stat-card-sub strong {
+  color: var(--text-primary);
+}
+
+/* ==========================================================
+   6. RESPONSIVE ADAPTATIONS
+   ========================================================== */
+@media (max-width: 1200px) {
+  .analysis-control-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .control-right-group {
+    justify-content: space-between;
+  }
+  .daily-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .feeder-heading-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+  .control-left-group {
+    flex-wrap: wrap;
+  }
+  .control-right-group {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .daily-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .chart-canvas-container {
+    height: 340px;
+  }
+}

@@ -1,0 +1,528 @@
+{% extends "dashboard_shell.html" %}
+
+{% block title %}SmartFeeder EMS — Home Dashboard{% endblock %}
+{% block breadcrumb_title %}Home Dashboard{% endblock %}
+
+{% block dashboard_content %}
+<div class="home-container">
+  
+  <!-- Page Header Hierarchy -->
+  <section class="page-title-banner" aria-label="Page Title">
+    <div class="title-text-group">
+      <div class="substation-category-tag">110/11 kV PRIMARY SUBSTATION</div>
+      <h1 class="page-heading">HOME DASHBOARD</h1>
+      <p class="page-subheading">11 kV Feeder-Level Energy Management Overview</p>
+    </div>
+    
+    <div class="telemetry-timestamp-badge" id="telemetryTimestampWrap">
+      <div class="ts-status-dot-pulse" aria-hidden="true"></div>
+      <div class="ts-text-wrap">
+        <span class="ts-label">LATEST TELEMETRY:</span>
+        <span class="ts-value" id="telemetryTimestamp">Loading...</span>
+      </div>
+      <button id="refreshDataBtn" class="btn-refresh" title="Refresh Live Telemetry" aria-label="Refresh Telemetry">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+      </button>
+    </div>
+  </section>
+
+  <!-- Error Alert Container (shown on network or load error) -->
+  <div id="homeErrorBanner" class="home-error-banner" style="display: none;" role="alert">
+    <div class="error-msg-content">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      <span id="homeErrorMessage">Unable to load dashboard data.</span>
+    </div>
+    <button id="retryLoadBtn" class="btn-retry-action">Retry</button>
+  </div>
+
+  <!-- ==========================================================
+       PRIMARY ROW: 3 Major Professional Interactive Cards
+       BUS-1 STATUS | BUS-2 STATUS | EMS STATUS
+       ========================================================== -->
+  <section class="major-cards-grid" aria-label="Major Substation Bus and EMS Status Cards">
+    
+    <!-- CARD 1: BUS-1 STATUS -->
+    <a href="/bus/1" class="major-card bus-card" id="cardBus1" aria-label="BUS-1 Status - Click to View Details">
+      <div class="card-accent-stripe green" aria-hidden="true"></div>
+      
+      <div class="major-card-header">
+        <div class="card-title-group">
+          <div class="card-bus-code">BUS-1 • 11 kV</div>
+          <h2 class="card-main-title">BUS-1 STATUS</h2>
+          <span class="card-bus-type">11 kV Distribution Bus</span>
+        </div>
+        <div class="card-live-chip">
+          <span class="chip-pulse-dot" aria-hidden="true"></span>
+          <span>LIVE</span>
+        </div>
+      </div>
+
+      <div class="major-card-body">
+        
+        <!-- Primary Metric: Current Bus Demand (Hero Recessed Panel) -->
+        <div class="primary-metric-block">
+          <div class="metric-label">
+            <svg class="param-micro-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+            <span>CURRENT BUS DEMAND</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-number skeleton-text" id="bus1Demand">--.-</span>
+            <span class="metric-unit">kW</span>
+          </div>
+        </div>
+
+        <!-- 3-Column Electrical Parameters Strip (Digital Instrument Console) -->
+        <div class="electrical-parameters-strip">
+          <div class="param-item">
+            <span class="param-label">
+              <svg class="param-micro-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+              <span>BUS VOLTAGE</span>
+            </span>
+            <div class="param-val-group">
+              <span class="param-value skeleton-text" id="bus1Voltage">--.--</span>
+              <span class="param-unit">kV</span>
+            </div>
+          </div>
+          <div class="param-divider" aria-hidden="true"></div>
+          <div class="param-item">
+            <span class="param-label">
+              <svg class="param-micro-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path><path d="M12 8l4 4-4 4"></path></svg>
+              <span>BUS CURRENT</span>
+            </span>
+            <div class="param-val-group">
+              <span class="param-value skeleton-text" id="bus1Current">--.-</span>
+              <span class="param-unit">A</span>
+            </div>
+          </div>
+          <div class="param-divider" aria-hidden="true"></div>
+          <div class="param-item">
+            <span class="param-label">
+              <svg class="param-micro-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12c2.5-6 5.5-6 8 0s5.5 6 8 0 3.5-3 4-3"></path></svg>
+              <span>BUS FREQUENCY</span>
+            </span>
+            <div class="param-val-group">
+              <span class="param-value skeleton-text" id="bus1Frequency">--.--</span>
+              <span class="param-unit">Hz</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operational Status Indicators (Solar & BESS Asset Modules) -->
+        <div class="sub-status-row">
+          
+          <div class="status-indicator-box solar-module">
+            <div class="indicator-header">
+              <span class="module-asset-icon solar-icon-sm" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path></svg>
+              </span>
+              <span class="indicator-title">SOLAR (495 kW)</span>
+            </div>
+            <div class="indicator-badge" id="bus1SolarBadge">
+              <span class="badge-dot"></span>
+              <span id="bus1SolarStatus">--</span>
+            </div>
+          </div>
+
+          <div class="status-indicator-box bess-module">
+            <div class="indicator-header">
+              <span class="module-asset-icon bess-icon-sm" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="16" height="10" rx="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>
+              </span>
+              <span class="indicator-title">BESS STATUS</span>
+            </div>
+            <div class="indicator-badge" id="bus1BessBadge">
+              <span class="badge-dot"></span>
+              <span id="bus1BessStatus">--</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="major-card-footer">
+        <span class="card-action-text">View Details</span>
+        <svg class="action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </div>
+
+    </a>
+
+    <!-- CARD 2: BUS-2 STATUS -->
+    <a href="/bus/2" class="major-card bus-card" id="cardBus2" aria-label="BUS-2 Status - Click to View Details">
+      <div class="card-accent-stripe green" aria-hidden="true"></div>
+      
+      <div class="major-card-header">
+        <div class="card-title-group">
+          <div class="card-bus-code">BUS-2 • 11 kV</div>
+          <h2 class="card-main-title">BUS-2 STATUS</h2>
+          <span class="card-bus-type">11 kV Distribution Bus</span>
+        </div>
+        <div class="card-live-chip">
+          <span class="chip-pulse-dot" aria-hidden="true"></span>
+          <span>LIVE</span>
+        </div>
+      </div>
+
+      <div class="major-card-body">
+        
+        <!-- Primary Metric: Current Bus Demand (Hero Recessed Panel) -->
+        <div class="primary-metric-block">
+          <div class="metric-label">
+            <svg class="param-micro-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+            <span>CURRENT BUS DEMAND</span>
+          </div>
+          <div class="metric-value-wrap">
+            <span class="metric-number skeleton-text" id="bus2Demand">--.-</span>
+            <span class="metric-unit">kW</span>
+          </div>
+        </div>
+
+        <!-- 3-Column Electrical Parameters Strip (Digital Instrument Console) -->
+        <div class="electrical-parameters-strip">
+          <div class="param-item">
+            <span class="param-label">
+              <svg class="param-micro-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+              <span>BUS VOLTAGE</span>
+            </span>
+            <div class="param-val-group">
+              <span class="param-value skeleton-text" id="bus2Voltage">--.--</span>
+              <span class="param-unit">kV</span>
+            </div>
+          </div>
+          <div class="param-divider" aria-hidden="true"></div>
+          <div class="param-item">
+            <span class="param-label">
+              <svg class="param-micro-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M8 12h8"></path><path d="M12 8l4 4-4 4"></path></svg>
+              <span>BUS CURRENT</span>
+            </span>
+            <div class="param-val-group">
+              <span class="param-value skeleton-text" id="bus2Current">--.-</span>
+              <span class="param-unit">A</span>
+            </div>
+          </div>
+          <div class="param-divider" aria-hidden="true"></div>
+          <div class="param-item">
+            <span class="param-label">
+              <svg class="param-micro-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12c2.5-6 5.5-6 8 0s5.5 6 8 0 3.5-3 4-3"></path></svg>
+              <span>BUS FREQUENCY</span>
+            </span>
+            <div class="param-val-group">
+              <span class="param-value skeleton-text" id="bus2Frequency">--.--</span>
+              <span class="param-unit">Hz</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Operational Status Indicators (Solar & BESS Asset Modules) -->
+        <div class="sub-status-row">
+          
+          <div class="status-indicator-box solar-module">
+            <div class="indicator-header">
+              <span class="module-asset-icon solar-icon-sm" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path></svg>
+              </span>
+              <span class="indicator-title">SOLAR (420 kW)</span>
+            </div>
+            <div class="indicator-badge" id="bus2SolarBadge">
+              <span class="badge-dot"></span>
+              <span id="bus2SolarStatus">--</span>
+            </div>
+          </div>
+
+          <div class="status-indicator-box bess-module">
+            <div class="indicator-header">
+              <span class="module-asset-icon bess-icon-sm" aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="16" height="10" rx="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>
+              </span>
+              <span class="indicator-title">BESS STATUS</span>
+            </div>
+            <div class="indicator-badge" id="bus2BessBadge">
+              <span class="badge-dot"></span>
+              <span id="bus2BessStatus">--</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="major-card-footer">
+        <span class="card-action-text">View Details</span>
+        <svg class="action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </div>
+
+    </a>
+
+    <!-- CARD 3: EMS STATUS -->
+    <a href="/ems" class="major-card ems-card" id="cardEms" aria-label="EMS Status - Click to View Details">
+      <div class="card-accent-stripe blue" aria-hidden="true"></div>
+      
+      <div class="major-card-header">
+        <div class="card-title-group">
+          <div class="card-bus-code">SUPERVISORY EMS</div>
+          <h2 class="card-main-title">EMS STATUS</h2>
+          <span class="card-bus-type">Energy Management System</span>
+        </div>
+        <div class="card-active-chip">
+          <span class="chip-pulse-dot" aria-hidden="true"></span>
+          <span>ACTIVE</span>
+        </div>
+      </div>
+
+      <div class="major-card-body">
+        
+        <!-- Primary Metric: Current Operating Mode (Hero Component) -->
+        <div class="primary-metric-block ems-mode-block">
+          <div class="metric-label">CURRENT OPERATING MODE</div>
+          <div class="operating-mode-badge" id="emsOperatingModeWrap">
+            <span class="mode-bolt-icon" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            </span>
+            <span class="operating-mode-text skeleton-text" id="emsOperatingMode">--</span>
+          </div>
+        </div>
+
+        <!-- EMS Sub-Metrics List with Exact Tabular Alignment -->
+        <div class="ems-metrics-list">
+          
+          <div class="ems-metric-row">
+            <span class="ems-metric-label">
+              <svg class="param-micro-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path></svg>
+              <span>PV INVERTER SETPOINT</span>
+            </span>
+            <div class="ems-metric-value-wrap">
+              <span class="ems-metric-val skeleton-text" id="emsPvSetpoint">--.-</span>
+              <span class="ems-metric-unit">kW</span>
+            </div>
+          </div>
+
+          <div class="ems-metric-row">
+            <span class="ems-metric-label">
+              <svg class="param-micro-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="16" height="10" rx="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>
+              <span>BESS PCS SETPOINT</span>
+            </span>
+            <div class="ems-metric-value-wrap">
+              <span class="ems-metric-val skeleton-text" id="emsBessSetpoint">--.-</span>
+              <span class="ems-metric-unit">kW</span>
+            </div>
+          </div>
+
+          <div class="ems-metric-row highlight-row">
+            <span class="ems-metric-label">
+              <svg class="param-micro-icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 22h16"></path><path d="M12 2v20"></path><path d="M6 7h12"></path><path d="M7 13h10"></path></svg>
+              <span>GRID IMPORT</span>
+            </span>
+            <div class="ems-metric-value-wrap">
+              <span class="ems-metric-val skeleton-text" id="emsGridImport">--.-</span>
+              <span class="ems-metric-unit">kW</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="major-card-footer">
+        <span class="card-action-text">View Details</span>
+        <svg class="action-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+      </div>
+
+    </a>
+
+  </section>
+
+  <!-- ==========================================================
+       SECONDARY OVERVIEW SECTION: Compact Summary Metric Cards
+       ========================================================== -->
+  <section class="secondary-overview-section" aria-label="Secondary Energy Metrics Overview">
+    
+    <div class="secondary-section-title-wrap">
+      <h3 class="secondary-section-heading">SYSTEM AGGREGATE TELEMETRY</h3>
+      <span class="secondary-section-sub">Feeder Demand, Renewable Ingestion &amp; Storage Reserve</span>
+    </div>
+
+    <div class="secondary-metrics-grid">
+      
+      <!-- Metric 1: Total Feeder Demand -->
+      <div class="summary-metric-card">
+        <div class="card-top-info">
+          <span class="summary-metric-title">TOTAL FEEDER DEMAND</span>
+          <div class="metric-icon-wrap" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-6"></path></svg>
+          </div>
+        </div>
+        <div class="summary-metric-body">
+          <span class="summary-number skeleton-text" id="totalFeederDemand">--.-</span>
+          <span class="summary-unit">kW</span>
+        </div>
+        <div class="summary-card-sub">Sum of Feeders 1 to 8</div>
+      </div>
+
+      <!-- Metric 2: Total Solar Generation -->
+      <div class="summary-metric-card solar-card-summary">
+        <div class="card-top-info">
+          <span class="summary-metric-title">TOTAL SOLAR GENERATION</span>
+          <div class="metric-icon-wrap solar-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+          </div>
+        </div>
+        <div class="summary-metric-body">
+          <span class="summary-number skeleton-text text-amber" id="totalSolarGen">--.-</span>
+          <span class="summary-unit">kW</span>
+        </div>
+        <div class="summary-card-sub">Solar-A + Solar-B Capacity</div>
+      </div>
+
+      <!-- Metric 3: Total Grid Import -->
+      <div class="summary-metric-card grid-card-summary">
+        <div class="card-top-info">
+          <span class="summary-metric-title">TOTAL GRID IMPORT</span>
+          <div class="metric-icon-wrap grid-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+          </div>
+        </div>
+        <div class="summary-metric-body">
+          <span class="summary-number skeleton-text" id="totalGridImport">--.-</span>
+          <span class="summary-unit">kW</span>
+        </div>
+        <div class="summary-card-sub">Power Balance Net Supply</div>
+      </div>
+
+      <!-- Metric 4: BESS-A SOC -->
+      <div class="summary-metric-card bess-card-summary">
+        <div class="card-top-info">
+          <span class="summary-metric-title">BESS-A SOC</span>
+          <div class="metric-icon-wrap bess-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="6" width="18" height="12" rx="2"></rect><line x1="23" y1="11" x2="23" y2="13"></line></svg>
+          </div>
+        </div>
+        <div class="summary-metric-body">
+          <span class="summary-number skeleton-text text-blue" id="bessASoc">--.-</span>
+          <span class="summary-unit">%</span>
+        </div>
+        <!-- Compact 15% - 90% Operating Window Gauge -->
+        <div class="soc-window-gauge" title="EMS Operating Range: 15% - 90%">
+          <div class="gauge-track">
+            <div class="gauge-window-fill" id="bessAGaugeFill" style="width: 50%;"></div>
+          </div>
+          <div class="gauge-bounds-labels">
+            <span>15% MIN</span>
+            <span class="window-target-text">EMS WINDOW</span>
+            <span>90% MAX</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metric 5: BESS-B SOC -->
+      <div class="summary-metric-card bess-card-summary">
+        <div class="card-top-info">
+          <span class="summary-metric-title">BESS-B SOC</span>
+          <div class="metric-icon-wrap bess-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="1" y="6" width="18" height="12" rx="2"></rect><line x1="23" y1="11" x2="23" y2="13"></line></svg>
+          </div>
+        </div>
+        <div class="summary-metric-body">
+          <span class="summary-number skeleton-text text-blue" id="bessBSoc">--.-</span>
+          <span class="summary-unit">%</span>
+        </div>
+        <!-- Compact 15% - 90% Operating Window Gauge -->
+        <div class="soc-window-gauge" title="EMS Operating Range: 15% - 90%">
+          <div class="gauge-track">
+            <div class="gauge-window-fill" id="bessBGaugeFill" style="width: 50%;"></div>
+          </div>
+          <div class="gauge-bounds-labels">
+            <span>15% MIN</span>
+            <span class="window-target-text">EMS WINDOW</span>
+            <span>90% MAX</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ==========================================================
+       BOTTOM: Compact Substation System Status Strip
+       ========================================================== -->
+  <section class="system-status-strip" aria-label="Substation Subsystem Status Bar">
+    
+    <div class="status-strip-item">
+      <span class="strip-label">SUBSTATION</span>
+      <span class="strip-badge online">
+        <span class="strip-dot"></span>
+        <span>ONLINE</span>
+      </span>
+    </div>
+
+    <div class="strip-separator"></div>
+
+    <div class="status-strip-item">
+      <span class="strip-label">BUS-1</span>
+      <span class="strip-badge online">
+        <span class="strip-dot"></span>
+        <span>ONLINE</span>
+      </span>
+    </div>
+
+    <div class="strip-separator"></div>
+
+    <div class="status-strip-item">
+      <span class="strip-label">BUS-2</span>
+      <span class="strip-badge online">
+        <span class="strip-dot"></span>
+        <span>ONLINE</span>
+      </span>
+    </div>
+
+    <div class="strip-separator"></div>
+
+    <div class="status-strip-item">
+      <span class="strip-label">SOLAR</span>
+      <span class="strip-badge" id="stripSolarBadge">
+        <span class="strip-dot"></span>
+        <span id="stripSolarText">ACTIVE</span>
+      </span>
+    </div>
+
+    <div class="strip-separator"></div>
+
+    <div class="status-strip-item">
+      <span class="strip-label">BESS</span>
+      <span class="strip-badge online">
+        <span class="strip-dot"></span>
+        <span>AVAILABLE</span>
+      </span>
+    </div>
+
+    <div class="strip-separator"></div>
+
+    <div class="status-strip-item">
+      <span class="strip-label">EMS</span>
+      <span class="strip-badge online">
+        <span class="strip-dot"></span>
+        <span>ACTIVE</span>
+      </span>
+    </div>
+
+  </section>
+
+</div>
+{% endblock %}
+
+{% block shell_scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

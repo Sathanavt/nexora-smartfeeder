@@ -1,0 +1,872 @@
+/* ==========================================================
+   SmartFeeder EMS — BUS Detailed Dashboard CSS (BUS-1 & BUS-2)
+   Enterprise MNC Industrial Architecture (Schneider-Grade Standard)
+   ========================================================== */
+
+.bus-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ==========================================================
+   1. TOP NAVIGATION & BACK BUTTON
+   ========================================================== */
+.bus-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-back-home {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--brand-green-primary);
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xs);
+  transition: all var(--transition-fast);
+}
+
+.btn-back-home:hover {
+  background: var(--brand-green-light);
+  border-color: var(--brand-green-border-strong);
+  transform: translateX(-3px);
+  box-shadow: 0 2px 6px rgba(0, 132, 61, 0.15);
+}
+
+.btn-back-home svg {
+  transition: transform var(--transition-fast);
+}
+
+.btn-back-home:hover svg {
+  transform: translateX(-2px);
+}
+
+.bus-breadcrumb-path {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.bus-breadcrumb-path a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color var(--transition-fast);
+}
+
+.bus-breadcrumb-path a:hover {
+  color: var(--brand-green-primary);
+}
+
+.crumb-separator {
+  color: var(--border-medium);
+}
+
+.crumb-current {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+/* ==========================================================
+   2. PAGE HEADING BANNER (STRONG ENTERPRISE AUTHORITY)
+   ========================================================== */
+.bus-heading-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.35rem 1.85rem;
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.bus-heading-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #00843D, #00B354, #1D4ED8);
+}
+
+.bus-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bus-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.bus-main-title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.15;
+}
+
+.bus-asset-chip {
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--brand-green-light);
+  color: var(--brand-green-primary);
+  border: 1px solid var(--brand-green-border);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow-xs);
+}
+
+.bus-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.bus-telemetry-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  padding: 0.45rem 0.95rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-mono);
+  box-shadow: var(--shadow-xs);
+}
+
+.bus-telemetry-badge .ts-label {
+  color: var(--text-muted);
+  font-weight: 700;
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+}
+
+.bus-telemetry-badge .ts-value {
+  color: var(--text-primary);
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+/* Top Accent Stripes */
+.card-accent-stripe {
+  height: 3px;
+  width: 100%;
+}
+
+.bus-summary-card .card-accent-stripe {
+  width: calc(100% + 3.3rem);
+  margin-left: -1.65rem;
+  margin-top: -1.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.der-card .card-accent-stripe {
+  width: calc(100% + 3rem);
+  margin-left: -1.5rem;
+  margin-top: -1.35rem;
+  margin-bottom: 0.25rem;
+}
+
+.card-accent-stripe.green {
+  background: linear-gradient(90deg, #00843D, #00B354);
+}
+
+.card-accent-stripe.amber {
+  background: linear-gradient(90deg, #B45309, #F59E0B);
+}
+
+.card-accent-stripe.blue {
+  background: linear-gradient(90deg, #1D4ED8, #3B82F6);
+}
+
+/* ==========================================================
+   3. BUS SUMMARY CONSOLE CARD (ELECTRICAL TELEMETRY GRID)
+   ========================================================== */
+.bus-summary-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.35rem 1.65rem 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.summary-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.summary-card-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.summary-heading {
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-annotation {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* 6-Cell Telemetry Layout */
+.summary-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+}
+
+.metric-cell {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 86px;
+  position: relative;
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
+}
+
+.metric-cell:hover {
+  border-color: rgba(0, 132, 61, 0.35);
+}
+
+.metric-cell.highlight-cell {
+  background: var(--brand-green-light);
+  border-color: var(--brand-green-border);
+}
+
+.metric-cell-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.metric-cell-value {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.metric-cell-value.text-green {
+  color: var(--brand-green-primary);
+}
+
+.metric-cell-unit {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Status Chips inside Summary Grid */
+.cell-status-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  margin-top: 0.25rem;
+}
+
+.cell-status-chip.active {
+  background: var(--brand-green-light);
+  border-color: var(--brand-green-border);
+  color: var(--brand-green-primary);
+}
+
+.cell-status-chip.inactive {
+  background: var(--surface-subtle);
+  border-color: var(--border-medium);
+  color: var(--text-muted);
+}
+
+.cell-status-chip.discharging {
+  background: var(--accent-blue-light);
+  border-color: var(--accent-blue-border);
+  color: var(--accent-blue);
+}
+
+.cell-status-chip.charging {
+  background: var(--accent-amber-light);
+  border-color: var(--accent-amber-border);
+  color: var(--accent-amber);
+}
+
+.cell-status-chip.idle {
+  background: var(--surface-subtle);
+  border-color: var(--border-medium);
+  color: var(--text-muted);
+}
+
+/* Standardized Live Pulse Badge */
+.bus-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-full);
+  background: var(--brand-green-light);
+  border: 1px solid var(--brand-green-border);
+  color: var(--brand-green-primary);
+}
+
+.bus-live-badge .pulse-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--brand-green-primary);
+  animation: pulse-live-dot 2s infinite;
+}
+
+.bus-live-badge.inactive {
+  background: var(--surface-subtle);
+  border-color: var(--border-medium);
+  color: var(--text-muted);
+}
+
+.bus-live-badge.inactive .pulse-dot {
+  background-color: var(--text-muted);
+  animation: none;
+}
+
+.bus-live-badge.discharging {
+  background: var(--accent-blue-light);
+  border-color: var(--accent-blue-border);
+  color: var(--accent-blue);
+}
+
+.bus-live-badge.discharging .pulse-dot {
+  background-color: var(--accent-blue);
+}
+
+.bus-live-badge.charging {
+  background: var(--accent-amber-light);
+  border-color: var(--accent-amber-border);
+  color: var(--accent-amber);
+}
+
+.bus-live-badge.charging .pulse-dot {
+  background-color: var(--accent-amber);
+}
+
+/* ==========================================================
+   4. FEEDERS SECTION (FEEDERS 1 TO 4 / 5 TO 8)
+   ========================================================== */
+.bus-feeders-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-main-heading {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.section-count-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  color: var(--text-secondary);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+}
+
+.feeders-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.feeder-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.2rem 1.25rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.95rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.feeder-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(0, 132, 61, 0.4);
+}
+
+/* Feeder Header */
+.feeder-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.feeder-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.feeder-icon-wrap {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-md);
+  background: var(--brand-green-light);
+  border: 1px solid var(--brand-green-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--brand-green-primary);
+  flex-shrink: 0;
+}
+
+.feeder-name-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.feeder-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: var(--text-primary);
+}
+
+.feeder-type {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+/* Feeder Demand Hero Metric */
+.feeder-demand-block {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.feeder-demand-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-transform: uppercase;
+}
+
+.feeder-demand-val-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+}
+
+.feeder-demand-val {
+  font-size: 1.95rem;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: var(--text-primary);
+  font-feature-settings: 'tnum';
+  line-height: 1.1;
+}
+
+.feeder-demand-unit {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--brand-green-primary);
+}
+
+/* Compact Electrical Parameters */
+.feeder-params-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem 0.5rem;
+}
+
+.feeder-param-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.15rem;
+}
+
+.feeder-param-item .param-lbl {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.feeder-param-item .param-val {
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Feeder Footer View Details */
+.feeder-card-footer {
+  border-top: 1px solid var(--border-light);
+  padding-top: 0.65rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.view-details-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--brand-green-primary);
+}
+
+.view-details-action svg {
+  transition: transform var(--transition-fast);
+}
+
+.feeder-card:hover .view-details-action svg,
+.der-card:hover .view-details-action svg {
+  transform: translateX(4px);
+}
+
+/* ==========================================================
+   5. DISTRIBUTED ENERGY ASSETS (SOLAR & BESS CARDS)
+   ========================================================== */
+.bus-der-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.der-assets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.der-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 1.35rem 1.5rem 1.15rem;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  position: relative;
+  overflow: hidden;
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.der-card:hover {
+  transform: translateY(-4px);
+}
+
+.der-card.solar-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(180, 83, 9, 0.4);
+}
+
+.der-card.bess-card:hover {
+  box-shadow: var(--shadow-card-hover);
+  border-color: rgba(29, 78, 216, 0.4);
+}
+
+/* DER Card Top Identity */
+.der-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.der-identity {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.der-icon-wrap {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.der-icon-wrap.solar {
+  background: var(--accent-amber-light);
+  border: 1px solid var(--accent-amber-border);
+  color: var(--accent-amber);
+}
+
+.der-icon-wrap.bess {
+  background: var(--accent-blue-light);
+  border: 1px solid var(--accent-blue-border);
+  color: var(--accent-blue);
+}
+
+.der-title-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.der-main-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.der-sub-type {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* DER Primary Metric Hero Box */
+.der-primary-metric-box {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.95rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.der-primary-metric-box .param-lbl {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.der-big-val-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.der-big-val {
+  font-size: 2.35rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  line-height: 1.1;
+  font-feature-settings: 'tnum';
+}
+
+.der-big-val.text-green {
+  color: var(--brand-green-primary);
+}
+
+.der-big-unit {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+/* Horizontal SOC Operating Window Bar */
+.soc-progress-container {
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.85rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.soc-bar-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.soc-bar-track {
+  width: 100%;
+  height: 8px;
+  background: #E2E8F0;
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.soc-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1D4ED8, #00843D);
+  border-radius: var(--radius-full);
+  transition: width 0.6s ease;
+}
+
+.soc-bar-markers {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.65rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Secondary Parameters List */
+.der-params-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.der-param-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background: var(--surface-recessed);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+.der-param-lbl {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.der-param-val {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* ==========================================================
+   6. RESPONSIVE ADAPTATIONS FOR BUS PAGES
+   ========================================================== */
+@media (max-width: 1200px) {
+  .summary-metrics-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .feeders-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .bus-heading-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+  .summary-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+  .feeders-grid {
+    grid-template-columns: 1fr;
+  }
+  .der-assets-grid {
+    grid-template-columns: 1fr;
+  }
+}

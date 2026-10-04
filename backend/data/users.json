@@ -1,0 +1,38 @@
+[
+  {
+    "id": "usr_admin_01",
+    "username": "admin",
+    "password_hash": "scrypt:32768:8:1$1p9cu4ROBXyE7spc$e1201c247c19e01b22bef5296405520e177273638ca4c2202e950e120ca2a26bfc9b4cfcbf388b2701d7ecb3321c0e0efa982957e5ac37d022d0bd18ef873d75",
+    "role": "ADMIN",
+    "status": "ACTIVE",
+    "display_name": "System Administrator",
+    "created_at": "2026-10-03T10:17:19.723815"
+  },
+  {
+    "id": "usr_engineer_02",
+    "username": "engineer",
+    "password_hash": "scrypt:32768:8:1$vkcY7ENw3SwMQgdF$263952b6436750f3caf53a2b59b67ba59b9e102b4ad620b6010348bcb81d2957aadd898f79157fbac07f260edb4c3f5d7573e5c9c8f68e83cb3c22098afb61eb",
+    "role": "ENGINEER",
+    "status": "ACTIVE",
+    "display_name": "SCADA Engineer",
+    "created_at": "2026-10-04T07:44:06.395925"
+  },
+  {
+    "id": "usr_operator_03",
+    "username": "operator",
+    "password_hash": "scrypt:32768:8:1$RZpQc0B3SB5ldizy$85c76142cd3193093e3b5c534656b677f1150b9c1442491a1e8bc7485f01b4ea6f10914da161bf1562c466a2da3025275f02d03ff205d3202f1463d5cdce2d9f",
+    "role": "OPERATOR",
+    "status": "ACTIVE",
+    "display_name": "Substation Operator",
+    "created_at": "2026-10-04T07:44:06.481996"
+  },
+  {
+    "id": "usr_viewer_04",
+    "username": "viewer",
+    "password_hash": "scrypt:32768:8:1$5WmrvM8Gj4GZU25C$1cb003f4f12813963126d5279bef396db0ae7c5bcb6b5382fb02eb85c049861505bfa2e1642a9f85f67e095abc784826162a782ff541fe57ba86f064f14b1160",
+    "role": "VIEWER",
+    "status": "ACTIVE",
+    "display_name": "Telemetry Viewer",
+    "created_at": "2026-10-04T07:44:06.568036"
+  }
+]

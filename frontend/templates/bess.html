@@ -1,0 +1,514 @@
+{% extends "dashboard_shell.html" %}
+
+{% block title %}{{ bess.name }} Detailed Energy Storage Analysis | SmartFeeder EMS{% endblock %}
+{% block breadcrumb_title %}{{ bess.name }}{% endblock %}
+
+{% block shell_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/bess.css') }}">
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="bess-analysis-container" data-bess-id="{{ bess.id }}" data-bess-name="{{ bess.name }}">
+
+  <!-- ==========================================================
+       1. TOP NAVIGATION & SEQUENTIAL BACK BUTTON
+       ========================================================== -->
+  <nav class="bess-top-nav" aria-label="Page Navigation">
+    <a href="{{ bess.bus_route }}" class="btn-back-bus" id="btnBackToBus" title="Return to {{ bess.bus }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to {{ bess.bus }}</span>
+    </a>
+
+    <div class="bess-nav-breadcrumbs" aria-label="Breadcrumb hierarchy">
+      <span class="crumb">Home</span>
+      <span class="crumb-separator">/</span>
+      <a href="{{ bess.bus_route }}" class="crumb link">{{ bess.bus }}</a>
+      <span class="crumb-separator">/</span>
+      <span class="crumb current">{{ bess.name }}</span>
+    </div>
+  </nav>
+
+  <!-- ==========================================================
+       2. ASSET IDENTITY HERO BANNER
+       ========================================================== -->
+  <header class="bess-heading-banner">
+    <div class="bess-banner-left">
+      <div class="bess-title-group">
+        <div class="bess-category-tag">BATTERY ENERGY STORAGE SYSTEM &bull; {{ bess.bus }}</div>
+        <div class="bess-title-row">
+          <h1 class="bess-main-title">{{ bess.name }} Detailed Energy Storage Analysis</h1>
+          <span class="bess-capacity-chip">2 MWh (2000 kWh)</span>
+          <span class="bess-bus-chip">{{ bess.bus }}</span>
+        </div>
+        <p class="bess-subtitle">Utility-Scale Battery Storage synchronized with {{ bess.solar_name }} ({{ bess.solar_capacity_kw }} kW) for Local Feeder Buffering &amp; Substation Dispatch</p>
+      </div>
+    </div>
+
+    <div class="bess-banner-right">
+      <div class="bess-header-meta">
+        <div class="bess-status-indicator">
+          <span class="status-pulse-ring active" aria-hidden="true">
+            <span class="status-pulse-dot" id="headerStatusPulse"></span>
+          </span>
+          <span class="status-text" id="headerStatusText">{{ telemetry.summary.current_status if (telemetry and telemetry.available) else 'LIVE' }}</span>
+        </div>
+        <span class="bess-id-badge" title="Associated Substation Bus">BUS: {{ bess.bus }}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       3. CURRENT BESS TELEMETRY STRIP (6 SUMMARY CARDS)
+       ========================================================== -->
+  <section class="bess-telemetry-strip" aria-label="Current BESS Telemetry">
+    <div class="telemetry-strip-grid">
+      
+      <!-- 1. Current SOC -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">CURRENT SOC</div>
+        <div class="snap-val-wrap">
+          <span class="snap-number" id="snapCurrentSoc">
+            {{ "%.1f"|format(telemetry.summary.current_soc_pct) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="snap-unit">%</span>
+        </div>
+        <div class="snap-sub">Window: 15% MIN &ndash; 90% MAX</div>
+      </div>
+
+      <!-- 2. Current SOH -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">BATTERY HEALTH (SOH)</div>
+        <div class="snap-val-wrap">
+          <span class="snap-number text-green" id="snapCurrentSoh">
+            {{ "%.2f"|format(telemetry.summary.current_soh_pct) if (telemetry and telemetry.available) else '--.--' }}
+          </span>
+          <span class="snap-unit">%</span>
+        </div>
+        <div class="snap-sub">Cell Health Index</div>
+      </div>
+
+      <!-- 3. Current Stored Energy -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">STORED ENERGY</div>
+        <div class="snap-val-wrap">
+          <span class="snap-number text-blue" id="snapStoredEnergy">
+            {{ "%.1f"|format(telemetry.summary.current_energy_kwh) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="snap-unit">kWh</span>
+        </div>
+        <div class="snap-sub">Installed: 2000 kWh</div>
+      </div>
+
+      <!-- 4. Current BESS Power -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">BESS POWER</div>
+        <div class="snap-val-wrap">
+          <span class="snap-number" id="snapCurrentPower">
+            {{ "%.1f"|format(telemetry.summary.current_power_kw) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="snap-unit">kW</span>
+        </div>
+        <div class="snap-sub">(+) Disch. / (&minus;) Charge</div>
+      </div>
+
+      <!-- 5. Operational Status -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">OPERATIONAL STATUS</div>
+        <div class="snap-status-wrap">
+          <span id="snapStatusBadge" class="bess-status-pill {{ telemetry.summary.current_status.lower() if (telemetry and telemetry.available) else 'idle' }}">
+            <span class="pill-dot"></span>
+            <span id="snapStatusText">{{ telemetry.summary.current_status if (telemetry and telemetry.available) else 'IDLE' }}</span>
+          </span>
+        </div>
+        <div class="snap-sub">EMS PCS Inverter State</div>
+      </div>
+
+      <!-- 6. Dynamic Reserve -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">DYNAMIC RESERVE</div>
+        <div class="snap-val-wrap">
+          <span class="snap-number text-amber" id="snapDynamicReserve">
+            {{ "%.1f"|format(telemetry.summary.current_reserve_discharge_kwh) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="snap-unit">kWh</span>
+        </div>
+        <div class="snap-sub">Disch: <strong id="snapDischReserve">{{ "%.0f"|format(telemetry.summary.current_reserve_discharge_kwh) if (telemetry and telemetry.available) else '--' }}</strong> | Chg: <strong id="snapChargeHeadroom">{{ "%.0f"|format(telemetry.summary.current_headroom_charge_kwh) if (telemetry and telemetry.available) else '--' }}</strong> kWh</div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       4. TOP CONTROL BAR (CALENDAR & DOWNLOAD EXCEL)
+       ========================================================== -->
+  <section class="analysis-control-bar" aria-label="Analysis Controls">
+    
+    <!-- LEFT: Standard Unrestricted Calendar Date Picker -->
+    <div class="control-left-group">
+      <span class="control-label">TELEMETRY DATE:</span>
+      <div class="calendar-input-wrap">
+        <span class="calendar-icon-indicator" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </span>
+        <input
+          type="date"
+          id="bessDatePicker"
+          class="calendar-date-picker"
+          value="{{ default_date }}"
+          title="Select any date for BESS telemetry analysis"
+          aria-label="Select Telemetry Date"
+        >
+      </div>
+      <span id="bessDateBadge" class="date-display-badge">29 Sep 2026</span>
+      
+      <!-- EMS Operating Window Badge -->
+      <span class="operating-window-chip" title="SmartFeeder EMS Operating Boundary">
+        <span class="window-dot"></span>
+        <span>15% MIN &mdash; EMS WINDOW &mdash; 90% MAX</span>
+      </span>
+    </div>
+
+    <!-- RIGHT: Download Excel Button -->
+    <div class="control-right-group">
+      <button id="btnDownloadExcel" class="btn-download-excel" title="Download Hourly and Summary BESS Data as Excel">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Download Excel</span>
+      </button>
+    </div>
+
+  </section>
+
+  <!-- ==========================================================
+       5. FOUR PERMANENT ANALYSIS SECTIONS (ONE BELOW ANOTHER)
+       ========================================================== -->
+
+  <!-- SECTION 1: BESS STATE OF CHARGE (SOC) -->
+  <section class="primary-chart-card" id="sectionSoc" aria-label="BESS State of Charge Section">
+    <div class="chart-card-header">
+      <div class="chart-title-block">
+        <div class="section-tag-mini">SECTION 1 &bull; CHARGE LEVEL</div>
+        <h2 class="chart-main-title" id="titleSocChart">BESS STATE OF CHARGE (SOC)</h2>
+        <span class="chart-subtitle" id="subtitleSocChart">24-Hour SOC Profile for {{ bess.name }} (% within 15%&ndash;90% Operating Window)</span>
+      </div>
+
+      <div class="chart-header-actions">
+        <!-- Series Legend for Comparison Mode -->
+        <div class="chart-series-legend" id="legendSoc" style="display: none;" aria-hidden="true">
+          <div class="legend-item">
+            <span class="legend-dot actual"></span>
+            <span>Actual SOC</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot secondary"></span>
+            <span>Forecast SOC</span>
+          </div>
+        </div>
+
+        <!-- Independent Section 1 Dropdown (3 options) -->
+        <div class="dropdown-wrap">
+          <label for="selectSocAnalysis" class="section-select-label">VIEW:</label>
+          <select id="selectSocAnalysis" class="analysis-select" aria-label="Select BESS SOC Visualization">
+            <option value="actual" selected>Actual SOC vs Time</option>
+            <option value="forecast">Forecasted SOC vs Time</option>
+            <option value="comparison">Actual vs Forecasted SOC</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Chart Container -->
+    <div class="chart-canvas-container" id="canvasWrapSoc">
+      <canvas id="chartSoc"></canvas>
+    </div>
+
+    <!-- Empty State -->
+    <div class="data-unavailable-state" id="emptyStateSoc" role="alert" aria-live="polite">
+      <div class="empty-state-icon-wrap" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 class="empty-state-title">DATA NOT AVAILABLE</h3>
+      <p class="empty-state-sub">No BESS SOC telemetry available for selected date.</p>
+      <div class="empty-state-info-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        <span>Historical BESS telemetry is available from 05-Aug-2026 onwards.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: BESS STATE OF HEALTH (SOH) -->
+  <section class="primary-chart-card" id="sectionSoh" aria-label="BESS State of Health Section">
+    <div class="chart-card-header">
+      <div class="chart-title-block">
+        <div class="section-tag-mini">SECTION 2 &bull; BATTERY INTEGRITY</div>
+        <h2 class="chart-main-title" id="titleSohChart">BESS STATE OF HEALTH (SOH)</h2>
+        <span class="chart-subtitle" id="subtitleSohChart">Battery Degradation &amp; Capacity Retention Profile for {{ bess.name }} (%)</span>
+      </div>
+
+      <div class="chart-header-actions">
+        <!-- Series Legend for Comparison Mode -->
+        <div class="chart-series-legend" id="legendSoh" style="display: none;" aria-hidden="true">
+          <div class="legend-item">
+            <span class="legend-dot actual"></span>
+            <span>Actual SOH</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot secondary"></span>
+            <span>Forecast SOH</span>
+          </div>
+        </div>
+
+        <!-- Independent Section 2 Dropdown (3 options) -->
+        <div class="dropdown-wrap">
+          <label for="selectSohAnalysis" class="section-select-label">VIEW:</label>
+          <select id="selectSohAnalysis" class="analysis-select" aria-label="Select BESS SOH Visualization">
+            <option value="actual" selected>Actual SOH vs Time</option>
+            <option value="forecast">Forecasted SOH vs Time</option>
+            <option value="comparison">Actual vs Forecasted SOH</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Chart Container -->
+    <div class="chart-canvas-container" id="canvasWrapSoh">
+      <canvas id="chartSoh"></canvas>
+    </div>
+
+    <!-- Empty State -->
+    <div class="data-unavailable-state" id="emptyStateSoh" role="alert" aria-live="polite">
+      <div class="empty-state-icon-wrap" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 class="empty-state-title">DATA NOT AVAILABLE</h3>
+      <p class="empty-state-sub">No BESS SOH telemetry available for selected date.</p>
+      <div class="empty-state-info-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        <span>Historical BESS telemetry is available from 05-Aug-2026 onwards.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: BESS ENERGY ANALYSIS -->
+  <section class="primary-chart-card" id="sectionEnergy" aria-label="BESS Stored Energy Section">
+    <div class="chart-card-header">
+      <div class="chart-title-block">
+        <div class="section-tag-mini">SECTION 3 &bull; STORED ENERGY</div>
+        <h2 class="chart-main-title" id="titleEnergyChart">BESS ENERGY ANALYSIS</h2>
+        <span class="chart-subtitle" id="subtitleEnergyChart">24-Hour Stored Energy for {{ bess.name }} (kWh, based on 2000 kWh Capacity)</span>
+      </div>
+
+      <div class="chart-header-actions">
+        <!-- Series Legend for Comparison Mode -->
+        <div class="chart-series-legend" id="legendEnergy" style="display: none;" aria-hidden="true">
+          <div class="legend-item">
+            <span class="legend-dot actual"></span>
+            <span>Actual Energy</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot secondary"></span>
+            <span>Forecast Energy</span>
+          </div>
+        </div>
+
+        <!-- Independent Section 3 Dropdown (3 options) -->
+        <div class="dropdown-wrap">
+          <label for="selectEnergyAnalysis" class="section-select-label">VIEW:</label>
+          <select id="selectEnergyAnalysis" class="analysis-select" aria-label="Select BESS Energy Visualization">
+            <option value="actual" selected>Actual Energy vs Time</option>
+            <option value="forecast">Forecasted Energy vs Time</option>
+            <option value="comparison">Actual vs Forecasted Energy</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Chart Container -->
+    <div class="chart-canvas-container" id="canvasWrapEnergy">
+      <canvas id="chartEnergy"></canvas>
+    </div>
+
+    <!-- Empty State -->
+    <div class="data-unavailable-state" id="emptyStateEnergy" role="alert" aria-live="polite">
+      <div class="empty-state-icon-wrap" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 class="empty-state-title">DATA NOT AVAILABLE</h3>
+      <p class="empty-state-sub">No BESS stored energy telemetry available for selected date.</p>
+      <div class="empty-state-info-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        <span>Historical BESS telemetry is available from 05-Aug-2026 onwards.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: BESS POWER ANALYSIS -->
+  <section class="primary-chart-card" id="sectionPower" aria-label="BESS Power Analysis Section">
+    <div class="chart-card-header">
+      <div class="chart-title-block">
+        <div class="section-tag-mini">SECTION 4 &bull; ACTIVE POWER DISPATCH</div>
+        <h2 class="chart-main-title" id="titlePowerChart">BESS POWER ANALYSIS</h2>
+        <span class="chart-subtitle" id="subtitlePowerChart">24-Hour BESS Power Dispatch for {{ bess.name }} ((+) Discharging / (&minus;) Charging in kW)</span>
+      </div>
+
+      <div class="chart-header-actions">
+        <!-- Series Legend for Power -->
+        <div class="chart-series-legend" id="legendPower" style="display: flex;" aria-hidden="true">
+          <div class="legend-item">
+            <span class="legend-dot actual" style="background: #D97706;"></span>
+            <span>(+) Discharging</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot utilized" style="background: #00843D;"></span>
+            <span>(&minus;) Charging</span>
+          </div>
+          <div class="legend-item" id="legendPowerForecastItem" style="display: none;">
+            <span class="legend-dot secondary"></span>
+            <span>Forecast Power</span>
+          </div>
+        </div>
+
+        <!-- Independent Section 4 Dropdown (3 options) -->
+        <div class="dropdown-wrap">
+          <label for="selectPowerAnalysis" class="section-select-label">VIEW:</label>
+          <select id="selectPowerAnalysis" class="analysis-select" aria-label="Select BESS Power Visualization">
+            <option value="actual" selected>Actual Power vs Time</option>
+            <option value="forecast">Forecasted Power vs Time</option>
+            <option value="comparison">Actual vs Forecasted Power</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Chart Container -->
+    <div class="chart-canvas-container" id="canvasWrapPower">
+      <canvas id="chartPower"></canvas>
+    </div>
+
+    <!-- Empty State -->
+    <div class="data-unavailable-state" id="emptyStatePower" role="alert" aria-live="polite">
+      <div class="empty-state-icon-wrap" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 class="empty-state-title">DATA NOT AVAILABLE</h3>
+      <p class="empty-state-sub">No BESS power telemetry available for selected date.</p>
+      <div class="empty-state-info-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        <span>Historical BESS telemetry is available from 05-Aug-2026 onwards.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       6. DAILY SUMMARY KPI CARDS
+       ========================================================== -->
+  <section class="daily-summary-section" aria-label="Daily BESS Key Performance Indicators">
+    <div class="section-heading-row">
+      <div class="section-heading-title">
+        <h3>DAILY BESS OPERATIONAL SUMMARY</h3>
+        <p>Integrated 24-hour cycle analytics and operating limits for {{ bess.name }}</p>
+      </div>
+    </div>
+
+    <div class="summary-cards-grid">
+      
+      <!-- 1. Daily SOC Range -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">DAILY SOC RANGE</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number" id="summaryMinSoc">
+            {{ "%.1f"|format(telemetry.summary.min_soc_pct) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="stat-big-unit">&ndash;</span>
+          <span class="stat-big-number text-green" id="summaryMaxSoc">
+            {{ "%.1f"|format(telemetry.summary.max_soc_pct) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="stat-big-unit">%</span>
+        </div>
+        <div class="stat-card-sub">Daily Average: <strong id="summaryAvgSoc">{{ "%.1f"|format(telemetry.summary.avg_soc_pct) if (telemetry and telemetry.available) else '--.-' }}%</strong></div>
+      </div>
+
+      <!-- 2. Energy Charged (Absorption) -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">TOTAL ENERGY CHARGED</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number text-green" id="summaryDailyCharged">
+            {{ "%.1f"|format(telemetry.summary.daily_charged_kwh) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="stat-big-unit">kWh</span>
+        </div>
+        <div class="stat-card-sub">Integrated Solar &amp; Bus Absorption</div>
+      </div>
+
+      <!-- 3. Energy Discharged (Support) -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">TOTAL ENERGY DISCHARGED</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number text-amber" id="summaryDailyDischarged">
+            {{ "%.1f"|format(telemetry.summary.daily_discharged_kwh) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="stat-big-unit">kWh</span>
+        </div>
+        <div class="stat-card-sub">Integrated Feeder Demand Support</div>
+      </div>
+
+      <!-- 4. Equivalent Cycles & SOH -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">EQUIVALENT CYCLES</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number text-blue" id="summaryDailyCycles">
+            {{ "%.2f"|format(telemetry.summary.daily_cycles) if (telemetry and telemetry.available) else '--.--' }}
+          </span>
+          <span class="stat-big-unit">cycles</span>
+        </div>
+        <div class="stat-card-sub">Daily Average SOH: <strong id="summaryAvgSoh">{{ "%.2f"|format(telemetry.summary.avg_soh_pct) if (telemetry and telemetry.available) else '--.--' }}%</strong></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Embedded Server-Side Initial Telemetry Data -->
+  <script id="initialBessTelemetry" type="application/json">
+    {{ telemetry | tojson | safe if telemetry else "{}" }}
+  </script>
+
+</div>
+{% endblock %}
+
+{% block shell_scripts %}
+<!-- Offline Standalone Chart.js 4.4.1 -->
+<script src="{{ url_for('static', filename='js/chart.umd.min.js') }}"></script>
+<!-- Master BESS Analysis Controller -->
+<script src="{{ url_for('static', filename='js/bess.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,809 @@
+/**
+ * SmartFeeder EMS — BESS Detailed Energy Storage Analysis Stylesheet
+ * Engineered for utility-grade SCADA monitoring of BESS-A & BESS-B.
+ * Conforms strictly with the MNC light corporate design system.
+ */
+
+/* ==========================================================
+   1. CONTAINER & GLOBAL LAYOUT
+   ========================================================== */
+.bess-analysis-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ==========================================================
+   2. TOP NAVIGATION & SEQUENTIAL BACK BUTTON
+   ========================================================== */
+.bess-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.btn-back-bus {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.95rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-secondary, #475569);
+  background: #FFFFFF;
+  border: 1px solid var(--border-medium, #CBD5E1);
+  border-radius: var(--radius-md, 8px);
+  text-decoration: none;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05));
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.btn-back-bus:hover {
+  color: var(--brand-green-primary, #00843D);
+  border-color: var(--brand-green-primary, #00843D);
+  background: var(--bg-surface-secondary, #F8FAFC);
+  transform: translateX(-2px);
+}
+
+.bess-nav-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  color: var(--text-muted, #64748B);
+}
+
+.bess-nav-breadcrumbs .crumb.link {
+  color: var(--brand-green-primary, #00843D);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.bess-nav-breadcrumbs .crumb.link:hover {
+  text-decoration: underline;
+}
+
+.bess-nav-breadcrumbs .crumb.current {
+  color: var(--text-primary, #0F172A);
+  font-weight: 700;
+}
+
+.bess-nav-breadcrumbs .crumb-separator {
+  color: var(--border-medium, #CBD5E1);
+}
+
+/* ==========================================================
+   3. ASSET IDENTITY HERO BANNER
+   ========================================================== */
+.bess-heading-banner {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.25rem 1.75rem;
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.05));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.bess-heading-banner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(180deg, #1D4ED8 0%, #0284C7 100%);
+}
+
+.bess-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.bess-category-tag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #1D4ED8;
+  text-transform: uppercase;
+}
+
+.bess-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.bess-main-title {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.bess-capacity-chip {
+  display: inline-flex;
+  align-items: center;
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.bess-bus-chip {
+  display: inline-flex;
+  align-items: center;
+  background: #F0FDF4;
+  color: #15803D;
+  border: 1px solid #BBF7D0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 0.2rem 0.65rem;
+  border-radius: 9999px;
+  letter-spacing: 0.02em;
+}
+
+.bess-subtitle {
+  font-size: 0.825rem;
+  color: var(--text-secondary, #475569);
+  margin: 0;
+}
+
+.bess-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.bess-id-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-surface-secondary, #F8FAFC);
+  border: 1px solid var(--border-medium, #CBD5E1);
+  color: var(--text-secondary, #475569);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md, 8px);
+}
+
+.bess-status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md, 8px);
+}
+
+.bess-status-indicator .status-pulse-ring {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(0, 132, 61, 0.2);
+}
+
+.bess-status-indicator .status-pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--brand-green-primary, #00843D);
+}
+
+.bess-status-indicator .status-text {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================
+   4. TELEMETRY STRIP (COMPACT SNAPSHOT CARDS)
+   ========================================================== */
+.bess-telemetry-strip {
+  width: 100%;
+}
+
+.telemetry-strip-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 1rem;
+}
+
+.telemetry-snap-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1rem 1.15rem;
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.05));
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  position: relative;
+  transition: transform var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease);
+}
+
+.telemetry-snap-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.snap-label {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary, #475569);
+  text-transform: uppercase;
+}
+
+.snap-val-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.snap-number {
+  font-size: 1.55rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.02em;
+}
+
+.snap-number.text-green {
+  color: var(--brand-green-primary, #00843D);
+}
+
+.snap-number.text-blue {
+  color: #1D4ED8;
+}
+
+.snap-number.text-amber {
+  color: #D97706;
+}
+
+.snap-unit {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+}
+
+.snap-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted, #64748B);
+}
+
+.bess-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bess-status-pill .pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.bess-status-pill.charging {
+  background: #ECFDF5;
+  color: #065F46;
+  border: 1px solid #A7F3D0;
+}
+.bess-status-pill.charging .pill-dot {
+  background: #10B981;
+}
+
+.bess-status-pill.discharging {
+  background: #FFFBEB;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+.bess-status-pill.discharging .pill-dot {
+  background: #F59E0B;
+}
+
+.bess-status-pill.idle {
+  background: #F1F5F9;
+  color: #475569;
+  border: 1px solid #CBD5E1;
+}
+.bess-status-pill.idle .pill-dot {
+  background: #94A3B8;
+}
+
+/* ==========================================================
+   5. TOP CONTROL BAR (CALENDAR & DOWNLOAD EXCEL)
+   ========================================================== */
+.analysis-control-bar {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 0.85rem 1.5rem;
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.05));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.control-left-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.control-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary, #475569);
+  text-transform: uppercase;
+}
+
+.calendar-input-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.calendar-icon-indicator {
+  position: absolute;
+  left: 0.75rem;
+  pointer-events: none;
+  color: var(--text-secondary, #475569);
+}
+
+.calendar-date-picker {
+  padding: 0.45rem 0.85rem 0.45rem 2.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary, #0F172A);
+  background: var(--bg-surface-secondary, #F8FAFC);
+  border: 1px solid var(--border-medium, #CBD5E1);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.calendar-date-picker:hover {
+  background-color: #FFFFFF;
+  border-color: var(--brand-green-primary, #00843D);
+}
+
+.calendar-date-picker:focus {
+  outline: none;
+  border-color: var(--brand-green-primary, #00843D);
+  box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.12);
+  background-color: #FFFFFF;
+}
+
+.date-display-badge {
+  display: inline-flex;
+  align-items: center;
+  background: var(--bg-surface-secondary, #F8FAFC);
+  border: 1px solid var(--border-medium, #CBD5E1);
+  color: var(--text-secondary, #475569);
+  font-family: var(--font-mono, monospace);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md, 8px);
+}
+
+.operating-window-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  color: #334155;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-md, 8px);
+  letter-spacing: 0.04em;
+}
+
+.operating-window-chip .window-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #0284C7;
+}
+
+.btn-download-excel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.48rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  background: var(--brand-green-primary, #00843D);
+  border: 1px solid var(--brand-green-hover, #006E33);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  box-shadow: var(--shadow-xs, 0 1px 2px rgba(0,0,0,0.05));
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.btn-download-excel:hover {
+  background: var(--brand-green-hover, #006E33);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 8px rgba(0, 132, 61, 0.25);
+}
+
+/* ==========================================================
+   6. PRIMARY ANALYSIS CARD (CHART & EMPTY STATE)
+   ========================================================== */
+.primary-chart-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.5rem 1.85rem;
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.05));
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-height: 480px;
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-light, #E2E8F0);
+  padding-bottom: 1rem;
+}
+
+.chart-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.section-tag-mini {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #1D4ED8;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.section-select-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary, #475569);
+  text-transform: uppercase;
+}
+
+.chart-main-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.chart-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-secondary, #475569);
+}
+
+.chart-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.chart-series-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: var(--bg-surface-secondary, #F8FAFC);
+  border: 1px solid var(--border-medium, #CBD5E1);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-md, 8px);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-secondary, #475569);
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.legend-dot.actual {
+  background: var(--brand-green-primary, #00843D);
+}
+
+.legend-dot.secondary {
+  background: #1D4ED8;
+}
+
+.legend-dot.utilized {
+  background: #0284C7;
+}
+
+.dropdown-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.analysis-select {
+  padding: 0.45rem 2rem 0.45rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary, #0F172A);
+  background: var(--bg-surface-secondary, #F8FAFC) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 0.75rem center;
+  border: 1px solid var(--border-medium, #CBD5E1);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  appearance: none;
+  transition: all var(--transition-fast, 0.15s ease);
+}
+
+.analysis-select:hover {
+  background-color: #FFFFFF;
+  border-color: var(--brand-green-primary, #00843D);
+}
+
+.analysis-select:focus {
+  outline: none;
+  border-color: var(--brand-green-primary, #00843D);
+  box-shadow: 0 0 0 3px rgba(0, 132, 61, 0.12);
+  background-color: #FFFFFF;
+}
+
+.chart-canvas-container {
+  position: relative;
+  width: 100%;
+  height: 380px;
+}
+
+/* Empty State / Data Unavailable */
+.data-unavailable-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  margin: auto 0;
+}
+
+.data-unavailable-state.visible {
+  display: flex;
+}
+
+.empty-state-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #FEF2F2;
+  border: 1px solid #FECACA;
+  color: #DC2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.empty-state-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: 0.02em;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-state-sub {
+  font-size: 0.92rem;
+  color: var(--text-secondary, #475569);
+  margin: 0 0 1.25rem 0;
+}
+
+.empty-state-info-box {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-md, 8px);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+/* ==========================================================
+   7. DAILY SUMMARY STAT CARDS (BOTTOM SECTION)
+   ========================================================== */
+.daily-summary-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.section-heading-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.section-heading-title h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.section-heading-title p {
+  font-size: 0.78rem;
+  color: var(--text-secondary, #475569);
+  margin: 0.2rem 0 0 0;
+}
+
+.summary-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+}
+
+.summary-stat-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-light, #E2E8F0);
+  border-radius: var(--radius-lg, 12px);
+  padding: 1.25rem 1.4rem;
+  box-shadow: var(--shadow-card, 0 1px 3px rgba(0,0,0,0.05));
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease);
+}
+
+.summary-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.stat-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-card-title {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary, #475569);
+  text-transform: uppercase;
+}
+
+.stat-card-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm, 6px);
+  background: #F1F5F9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-card-body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.stat-big-number {
+  font-size: 1.75rem;
+  font-weight: 800;
+  font-family: var(--font-mono, monospace);
+  color: var(--text-primary, #0F172A);
+  letter-spacing: -0.02em;
+}
+
+.stat-big-number.text-green {
+  color: var(--brand-green-primary, #00843D);
+}
+
+.stat-big-number.text-blue {
+  color: #1D4ED8;
+}
+
+.stat-big-number.text-amber {
+  color: #D97706;
+}
+
+.stat-big-unit {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #475569);
+}
+
+.stat-card-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted, #64748B);
+}
+
+/* ==========================================================
+   8. RESPONSIVE BREAKPOINTS
+   ========================================================== */
+@media (max-width: 1200px) {
+  .telemetry-strip-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .summary-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .bess-analysis-container {
+    padding: 1rem;
+    gap: 1rem;
+  }
+  .bess-heading-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  .telemetry-strip-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .analysis-control-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+  .chart-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.85rem;
+  }
+  .summary-cards-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}SmartFeeder EMS — Home Placeholder{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/placeholder.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="placeholder-shell">
+  
+  <!-- Navigation Topbar -->
+  <header class="placeholder-header">
+    <div class="brand-mini">
+      <div class="brand-mini-icon" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+        </svg>
+      </div>
+      <div class="brand-mini-title">SmartFeeder <span class="brand-accent">EMS</span></div>
+    </div>
+
+    <div class="header-user-actions">
+      <div class="user-badge">
+        <span>User: <strong>{{ user.username if user else 'admin' }}</strong></span>
+        <span class="role-pill">{{ user.role if user else 'administrator' }}</span>
+      </div>
+
+      <button id="logoutBtn" class="btn-logout" title="Sign out">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
+        <span>Logout</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Protected Placeholder Main -->
+  <main class="placeholder-main">
+    <div class="placeholder-card">
+      
+      <div class="success-badge" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+
+      <h1 class="placeholder-title">SmartFeeder <span class="brand-accent">EMS</span></h1>
+      <p class="placeholder-tagline">Intelligent Renewable Management at Feeder Level</p>
+
+      <div class="status-callout">
+        <h3>Authentication successful.</h3>
+      </div>
+
+      <div class="next-steps-info">
+        <p>Home Dashboard will be implemented next.</p>
+      </div>
+
+    </div>
+  </main>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/api.js') }}"></script>
+<script>
+  document.getElementById('logoutBtn')?.addEventListener('click', async function() {
+    try {
+      this.disabled = true;
+      this.textContent = 'Logging out...';
+      await window.AuthApi.logout();
+      window.location.href = '/login';
+    } catch (err) {
+      window.location.href = '/login';
+    }
+  });
+</script>
+{% endblock %}

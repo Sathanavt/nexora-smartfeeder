@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SmartFeeder EMS | Intelligent Renewable Management{% endblock %}</title>
+  
+  <!-- Inter Google Font for Crisp Corporate Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Design System Base Styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/background.css') }}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <!-- Reusable Global Background Layer (Substation + Transmission + Solar PV) -->
+  <div class="global-background-container" aria-hidden="true">
+    <div class="global-background-image"></div>
+    <div class="global-background-overlay"></div>
+  </div>
+
+  {% block content %}{% endblock %}
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

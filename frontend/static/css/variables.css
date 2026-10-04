@@ -1,0 +1,113 @@
+/* ==========================================================
+   SmartFeeder EMS — Global Design System Tokens
+   Premium Enterprise MNC Architecture (Schneider-Grade Standard)
+   ========================================================== */
+
+:root {
+  /* ----------------------------------------------------------
+     1. Primary Schneider Enterprise Brand Green Palette
+     ---------------------------------------------------------- */
+  --brand-green-primary: #00843D;       /* Official Schneider Electric Green */
+  --brand-green-hover: #006E33;         /* Deep enterprise green */
+  --brand-green-active: #005829;        /* Rich dark green */
+  --brand-green-light: #E6F4EA;         /* Soft tinted green background */
+  --brand-green-subtle: rgba(0, 132, 61, 0.08);
+  --brand-green-border: rgba(0, 132, 61, 0.22);
+  --brand-green-border-strong: rgba(0, 132, 61, 0.45);
+  --brand-green-glow: rgba(0, 132, 61, 0.16);
+
+  /* ----------------------------------------------------------
+     2. Technical Functional Supporting Accents (Industrial SCADA)
+     ---------------------------------------------------------- */
+  /* Blue: Electrical Parameters, BESS Discharge, Energy Storage */
+  --accent-blue: #1D4ED8;
+  --accent-blue-hover: #1E40AF;
+  --accent-blue-light: #EFF6FF;
+  --accent-blue-subtle: rgba(29, 78, 216, 0.08);
+  --accent-blue-border: rgba(29, 78, 216, 0.22);
+
+  /* Amber: Solar PV Generation, BESS Charging, Irradiance */
+  --accent-amber: #B45309;
+  --accent-amber-hover: #92400E;
+  --accent-amber-light: #FFFBEB;
+  --accent-amber-subtle: rgba(180, 83, 9, 0.08);
+  --accent-amber-border: rgba(180, 83, 9, 0.24);
+
+  /* Emerald: Online, Normal, Generation, Optimal */
+  --accent-emerald: #059669;
+  --accent-emerald-light: #ECFDF5;
+  --accent-emerald-border: rgba(5, 150, 105, 0.24);
+
+  /* Red: Critical System Alerts, Exceedance, Faults */
+  --accent-red: #B91C1C;
+  --accent-red-hover: #991B1B;
+  --accent-red-light: #FEF2F2;
+  --accent-red-border: rgba(185, 28, 28, 0.24);
+
+  /* Neutral: Inactive, Standby, Grid Import */
+  --accent-neutral: #475569;
+  --accent-neutral-light: #F1F5F9;
+  --accent-neutral-border: #CBD5E1;
+
+  /* ----------------------------------------------------------
+     3. Layered Surfaces & Enterprise Depths (MNC Light Aesthetic)
+     ---------------------------------------------------------- */
+  --bg-page: #EEF3F0;                   /* Subtle neutral-mint page canvas */
+  --surface-overlay: rgba(255, 255, 255, 0.82);
+  --surface-card: #FFFFFF;              /* Premium solid crisp white */
+  --surface-card-translucent: rgba(255, 255, 255, 0.95);
+  --surface-card-hover: #FFFFFF;
+  --surface-recessed: #F8FAFC;          /* Tonal recessed telemetry panel */
+  --surface-recessed-green: #F4F9F6;    /* Subtle green-tinted telemetry panel */
+  --surface-subtle: #F1F5F9;            /* Controls & chips background */
+  --surface-input: #FFFFFF;
+
+  /* ----------------------------------------------------------
+     4. Enterprise Typography (Graphite, Slate, White)
+     ---------------------------------------------------------- */
+  --text-primary: #0F172A;              /* High-contrast deep slate navy */
+  --text-secondary: #334155;            /* Slate medium-dark */
+  --text-muted: #64748B;                /* Slate muted telemetry label */
+  --text-faint: #94A3B8;                /* Soft micro annotation */
+  --text-inverse: #FFFFFF;
+
+  /* ----------------------------------------------------------
+     5. Subtle Technical Borders & Hairlines
+     ---------------------------------------------------------- */
+  --border-light: rgba(15, 23, 42, 0.08);   /* Crisp light industrial border */
+  --border-subtle: rgba(15, 23, 42, 0.05);  /* Faint inner divider */
+  --border-medium: #CBD5E1;                 /* Form input inactive border */
+  --border-focus: #00843D;                  /* Active focus stroke */
+
+  /* ----------------------------------------------------------
+     6. Typography Stacks
+     ---------------------------------------------------------- */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* ----------------------------------------------------------
+     7. Corner Radii - Restrained & Engineered (Industrial Standard)
+     ---------------------------------------------------------- */
+  --radius-xs: 3px;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ----------------------------------------------------------
+     8. Enterprise Depth & Shadow System
+     ---------------------------------------------------------- */
+  --shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05), 0 1px 2px rgba(15, 23, 42, 0.03);
+  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.04), 0 4px 12px -2px rgba(15, 23, 42, 0.03), 0 0 0 1px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 8px 24px -4px rgba(15, 23, 42, 0.08), 0 3px 8px -2px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(0, 132, 61, 0.35);
+  --shadow-elevated: 0 14px 32px -6px rgba(15, 23, 42, 0.09), 0 4px 12px -2px rgba(15, 23, 42, 0.04), 0 0 0 1px rgba(15, 23, 42, 0.08);
+
+  /* ----------------------------------------------------------
+     9. Micro-Interaction Transitions
+     ---------------------------------------------------------- */
+  --transition-fast: 160ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 240ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-smooth: 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}

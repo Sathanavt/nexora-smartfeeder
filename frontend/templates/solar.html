@@ -1,0 +1,437 @@
+{% extends "dashboard_shell.html" %}
+
+{% block title %}{{ solar.name }} Detailed Generation Analysis | SmartFeeder EMS{% endblock %}
+{% block breadcrumb_title %}{{ solar.name }}{% endblock %}
+
+{% block shell_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/solar.css') }}">
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="solar-analysis-container" data-solar-id="{{ solar.id }}" data-solar-name="{{ solar.name }}">
+
+  <!-- ==========================================================
+       1. TOP NAVIGATION & SEQUENTIAL BACK BUTTON
+       ========================================================== -->
+  <nav class="solar-top-nav" aria-label="Page Navigation">
+    <a href="{{ solar.bus_route }}" class="btn-back-bus" id="btnBackToBus" title="Return to {{ solar.bus }}">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>&larr; Back to {{ solar.bus }}</span>
+    </a>
+
+    <div class="solar-breadcrumb-path">
+      <a href="/" title="Home Dashboard">Home</a>
+      <span class="crumb-separator">/</span>
+      <a href="{{ solar.bus_route }}" title="{{ solar.bus }}">{{ solar.bus }}</a>
+      <span class="crumb-separator">/</span>
+      <span class="crumb-current">{{ solar.title }}</span>
+    </div>
+  </nav>
+
+  <!-- ==========================================================
+       2. PAGE HEADING BANNER
+       ========================================================== -->
+  <header class="solar-heading-banner">
+    <div class="solar-title-group">
+      <div class="solar-category-tag">11 kV DISTRIBUTED ENERGY RESOURCE (DER)</div>
+      <div class="solar-title-row">
+        <h1 class="solar-main-title" id="solarMainHeading">{{ solar.title }}</h1>
+        <span class="solar-capacity-chip">{{ solar.installed_capacity_text }} Installed Capacity</span>
+      </div>
+      <p class="solar-subtitle">Solar PV Generation &amp; Weather-Linked Utilization Analysis &bull; {{ solar.bus }}</p>
+    </div>
+
+    <div class="solar-header-meta">
+      <div class="solar-id-badge" title="Telemetry Dataset Identifier">
+        <span>ID {{ solar.source_id }}</span>
+      </div>
+      <div class="system-status-indicator" role="status" aria-live="polite">
+        <span class="status-pulse-ring" aria-hidden="true">
+          <span class="status-pulse-dot" id="headerStatusPulse"></span>
+        </span>
+        <span class="status-text" id="headerStatusText">{{ telemetry.current_telemetry.status if (telemetry and telemetry.available) else 'ACTIVE' }}</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       3. CURRENT SOLAR TELEMETRY STRIP (COMPACT SNAPSHOT)
+       ========================================================== -->
+  <section class="solar-telemetry-strip" aria-label="Current Solar Telemetry Snapshot">
+    <div class="telemetry-strip-grid">
+      <!-- 1. Current Generation -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">CURRENT GENERATION</div>
+        <div class="snap-val-wrap">
+          <span class="snap-val text-green" id="snapCurrentGen">
+            {{ "%.1f"|format(telemetry.current_telemetry.generation_kw) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="snap-unit">kW</span>
+        </div>
+        <div class="snap-sub">Real-time PV AC output</div>
+      </div>
+
+      <!-- 2. Installed Capacity -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">INSTALLED CAPACITY</div>
+        <div class="snap-val-wrap">
+          <span class="snap-val">{{ "%.0f"|format(solar.capacity_kw) }}</span>
+          <span class="snap-unit">kW</span>
+        </div>
+        <div class="snap-sub">Nameplate peak rating</div>
+      </div>
+
+      <!-- 3. Ambient Temperature -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">WEATHER TEMPERATURE</div>
+        <div class="snap-val-wrap">
+          <span class="snap-val" id="snapTemperature">
+            {{ "%.1f"|format(telemetry.current_telemetry.temperature_c) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="snap-unit">&deg;C</span>
+        </div>
+        <div class="snap-sub">On-site weather telemetry</div>
+      </div>
+
+      <!-- 4. Current Export to Grid -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">IMPORT TO GRID</div>
+        <div class="snap-val-wrap">
+          <span class="snap-val" id="snapGridImport">
+            {{ "%.1f"|format(telemetry.current_telemetry.grid_import_kw) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="snap-unit">kW</span>
+        </div>
+        <div class="snap-sub">Surplus to 110 kV bus</div>
+      </div>
+
+      <!-- 5. Current Charge to BESS -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">IMPORT TO BESS</div>
+        <div class="snap-val-wrap">
+          <span class="snap-val text-blue" id="snapBessImport">
+            {{ "%.1f"|format(telemetry.current_telemetry.bess_import_kw) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="snap-unit">kW</span>
+        </div>
+        <div class="snap-sub">{{ solar.bess_name }} charging flow</div>
+      </div>
+
+      <!-- 6. Solar Status -->
+      <div class="telemetry-snap-card">
+        <div class="snap-label">SOLAR STATUS</div>
+        <div class="snap-status-wrap">
+          <span id="snapStatusBadge" class="solar-status-pill {{ 'active' if (telemetry and telemetry.available and telemetry.current_telemetry.status == 'ACTIVE') else 'inactive' }}">
+            <span class="pill-dot"></span>
+            <span id="snapStatusText">{{ telemetry.current_telemetry.status if (telemetry and telemetry.available) else 'INACTIVE' }}</span>
+          </span>
+        </div>
+        <div class="snap-sub">Threshold: &ge; 8.0 kW</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       4. TOP CONTROL BAR (CALENDAR & DOWNLOAD EXCEL ONLY)
+       ========================================================== -->
+  <section class="analysis-control-bar" aria-label="Analysis Controls">
+    
+    <!-- LEFT: Standard Unrestricted Calendar / Date Picker -->
+    <div class="control-left-group">
+      <span class="control-label">TELEMETRY DATE:</span>
+      <div class="calendar-input-wrap">
+        <span class="calendar-icon-indicator" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+        </span>
+        <input
+          type="date"
+          id="solarDatePicker"
+          class="calendar-date-picker"
+          value="{{ default_date }}"
+          title="Select any date for solar generation analysis"
+          aria-label="Select Telemetry Date"
+        >
+      </div>
+      <span id="solarDateBadge" class="date-display-badge">29 Sep 2026</span>
+    </div>
+
+    <!-- RIGHT: Download Excel Button -->
+    <div class="control-right-group">
+      <button id="btnDownloadExcel" class="btn-download-excel" title="Download Hourly and Summary Data as Excel">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Download Excel</span>
+      </button>
+    </div>
+
+  </section>
+
+  <!-- ==========================================================
+       5. THREE PERMANENT ANALYSIS SECTIONS (ONE BELOW ANOTHER)
+       ========================================================== -->
+
+  <!-- SECTION 1: SOLAR GENERATION VS TIME -->
+  <section class="primary-chart-card" id="sectionTime" aria-label="Solar Generation vs Time Section">
+    <div class="chart-card-header">
+      <div class="chart-title-block">
+        <div class="section-tag-mini">SECTION 1 &bull; 24-HOUR PROFILE</div>
+        <h2 class="chart-main-title" id="titleTimeChart">SOLAR GENERATION VS TIME</h2>
+        <span class="chart-subtitle" id="subtitleTimeChart">24-Hour PV Output for {{ solar.name }} (kW)</span>
+      </div>
+
+      <div class="chart-header-actions">
+        <!-- Series Legend for Time Comparison -->
+        <div class="chart-series-legend" id="legendTime" style="display: none;" aria-hidden="true">
+          <div class="legend-item">
+            <span class="legend-dot actual"></span>
+            <span>Actual</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot secondary"></span>
+            <span>Forecast</span>
+          </div>
+        </div>
+
+        <!-- Independent Section 1 Dropdown -->
+        <div class="dropdown-wrap">
+          <label for="selectTimeAnalysis" class="section-select-label">VIEW:</label>
+          <select id="selectTimeAnalysis" class="analysis-select" aria-label="Select Solar Generation vs Time Visualization">
+            <option value="actual" selected>Actual Generation vs Time</option>
+            <option value="forecast">Forecasted Generation vs Time</option>
+            <option value="comparison">Actual vs Forecasted Generation</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canvas Container -->
+    <div class="chart-canvas-container" id="canvasWrapTime">
+      <canvas id="chartTime"></canvas>
+    </div>
+
+    <!-- Empty State -->
+    <div class="data-unavailable-state" id="emptyStateTime" role="alert" aria-live="polite">
+      <div class="empty-state-icon-wrap" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 class="empty-state-title">DATA NOT AVAILABLE</h3>
+      <p class="empty-state-sub">No solar generation data available for selected date.</p>
+      <div class="empty-state-info-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        <span>Historical solar data is available from 05-Aug-2026.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: SOLAR GENERATION VS TEMPERATURE -->
+  <section class="primary-chart-card" id="sectionTemp" aria-label="Solar Generation vs Temperature Section">
+    <div class="chart-card-header">
+      <div class="chart-title-block">
+        <div class="section-tag-mini">SECTION 2 &bull; THERMAL RESPONSE</div>
+        <h2 class="chart-main-title" id="titleTempChart">SOLAR GENERATION VS TEMPERATURE</h2>
+        <span class="chart-subtitle" id="subtitleTempChart">PV Generation Mapped with Weather Temperature for {{ solar.name }}</span>
+      </div>
+
+      <div class="chart-header-actions">
+        <!-- Series Legend for Temp Comparison -->
+        <div class="chart-series-legend" id="legendTemp" style="display: none;" aria-hidden="true">
+          <div class="legend-item">
+            <span class="legend-dot actual"></span>
+            <span>Actual</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot secondary"></span>
+            <span>Forecast</span>
+          </div>
+        </div>
+
+        <!-- Independent Section 2 Dropdown (3 options) -->
+        <div class="dropdown-wrap">
+          <label for="selectTempAnalysis" class="section-select-label">VIEW:</label>
+          <select id="selectTempAnalysis" class="analysis-select" aria-label="Select Solar Generation vs Temperature Visualization">
+            <option value="actual" selected>Actual Generation vs Temperature</option>
+            <option value="forecast">Forecasted Generation vs Temperature</option>
+            <option value="comparison">Actual vs Forecasted Generation vs Temperature</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canvas Container -->
+    <div class="chart-canvas-container" id="canvasWrapTemp">
+      <canvas id="chartTemp"></canvas>
+    </div>
+
+    <!-- Empty State -->
+    <div class="data-unavailable-state" id="emptyStateTemp" role="alert" aria-live="polite">
+      <div class="empty-state-icon-wrap" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 class="empty-state-title">DATA NOT AVAILABLE</h3>
+      <p class="empty-state-sub">No solar temperature telemetry available for selected date.</p>
+      <div class="empty-state-info-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        <span>Historical solar data is available from 05-Aug-2026.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: SOLAR UTILIZATION -->
+  <section class="primary-chart-card" id="sectionPower" aria-label="Solar Utilization Section">
+    <div class="chart-card-header">
+      <div class="chart-title-block">
+        <div class="section-tag-mini">SECTION 3 &bull; SOLAR UTILIZATION</div>
+        <h2 class="chart-main-title" id="titlePowerChart">SOLAR UTILIZATION</h2>
+        <span class="chart-subtitle" id="subtitlePowerChart">Hourly Comparison: Solar Generated vs Utilized for {{ solar.name }} (kW)</span>
+      </div>
+
+      <div class="chart-header-actions">
+        <!-- Series Legend for Utilization -->
+        <div class="chart-series-legend" id="legendPower" style="display: flex;" aria-hidden="true">
+          <div class="legend-item" id="legendPowerItem1">
+            <span class="legend-dot actual" id="legendPowerDot1"></span>
+            <span id="legendPowerText1">Solar Generated</span>
+          </div>
+          <div class="legend-item" id="legendPowerItem2">
+            <span class="legend-dot utilized" id="legendPowerDot2"></span>
+            <span id="legendPowerText2">Solar Utilized</span>
+          </div>
+        </div>
+
+        <!-- Independent Section 3 Dropdown (EXACTLY 1 option) -->
+        <div class="dropdown-wrap">
+          <label for="selectPowerAnalysis" class="section-select-label">VIEW:</label>
+          <select id="selectPowerAnalysis" class="analysis-select" aria-label="Select Solar Utilization Visualization">
+            <option value="utilized" selected>Solar Generated vs Utilized</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canvas Container -->
+    <div class="chart-canvas-container" id="canvasWrapPower">
+      <canvas id="chartPower"></canvas>
+    </div>
+
+    <!-- Empty State -->
+    <div class="data-unavailable-state" id="emptyStatePower" role="alert" aria-live="polite">
+      <div class="empty-state-icon-wrap" aria-hidden="true">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+      </div>
+      <h3 class="empty-state-title">DATA NOT AVAILABLE</h3>
+      <p class="empty-state-sub">No solar utilization data available for selected date.</p>
+      <div class="empty-state-info-box">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+        <span>Historical solar data is available from 05-Aug-2026.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       6. DAILY SUMMARY KPI CARDS
+       ========================================================== -->
+  <section class="daily-summary-section" aria-label="Daily Solar Key Performance Indicators">
+    <div class="daily-summary-grid">
+      
+      <!-- 1. Peak Generation -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">PEAK GENERATION</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number text-green" id="summaryPeakGen">
+            {{ "%.2f"|format(telemetry.summary.peak_generation_kw) if (telemetry and telemetry.available) else '--.--' }}
+          </span>
+          <span class="stat-big-unit">kW</span>
+        </div>
+        <div class="stat-card-sub">
+          Occurred at <strong id="summaryPeakTime">{{ telemetry.summary.peak_time if (telemetry and telemetry.available) else '--:--' }}</strong>
+        </div>
+      </div>
+
+      <!-- 2. Daily Solar Energy -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">DAILY SOLAR ENERGY</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number" id="summaryDailyGen">
+            {{ "%.1f"|format(telemetry.summary.daily_generation_kwh) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="stat-big-unit">kWh</span>
+        </div>
+        <div class="stat-card-sub">24-Hour Integrated PV Generation</div>
+      </div>
+
+      <!-- 3. Solar Energy Utilized -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">SOLAR UTILIZED</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number text-blue" id="summaryDailyUtilized">
+            {{ "%.1f"|format(telemetry.summary.daily_utilized_kwh) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="stat-big-unit">kWh</span>
+        </div>
+        <div class="stat-card-sub">
+          Utilization Rate: <strong id="summaryUtilRate">{{ "%.1f"|format(telemetry.summary.utilization_rate_pct) if (telemetry and telemetry.available) else '--.-' }}%</strong>
+        </div>
+      </div>
+
+      <!-- 4. Ambient Temperature Profile -->
+      <div class="summary-stat-card">
+        <div class="stat-card-top">
+          <span class="stat-card-title">AMBIENT TEMPERATURE</span>
+          <div class="stat-card-icon" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"></path></svg>
+          </div>
+        </div>
+        <div class="stat-card-body">
+          <span class="stat-big-number" id="summaryAvgTemp">
+            {{ "%.1f"|format(telemetry.summary.avg_temperature_c) if (telemetry and telemetry.available) else '--.-' }}
+          </span>
+          <span class="stat-big-unit">&deg;C</span>
+        </div>
+        <div class="stat-card-sub">
+          Daily Max: <strong id="summaryMaxTemp">{{ "%.1f"|format(telemetry.summary.max_temperature_c) if (telemetry and telemetry.available) else '--.-' }}&deg;C</strong>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Embedded Server-Side Initial Telemetry Data -->
+  <script id="initialSolarTelemetry" type="application/json">
+    {{ telemetry | tojson | safe if telemetry else "{}" }}
+  </script>
+
+</div>
+{% endblock %}
+
+{% block shell_scripts %}
+<!-- Offline Standalone Chart.js 4.4.1 -->
+<script src="{{ url_for('static', filename='js/chart.umd.min.js') }}"></script>
+<!-- Master Solar Analysis Controller -->
+<script src="{{ url_for('static', filename='js/solar.js') }}"></script>
+{% endblock %}

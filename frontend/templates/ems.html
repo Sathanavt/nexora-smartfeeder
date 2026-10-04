@@ -1,0 +1,814 @@
+{% extends "dashboard_shell.html" %}
+
+{% block title %}SmartFeeder EMS — Supervisory Control & Dispatch{% endblock %}
+{% block breadcrumb_title %}Energy Management System (EMS){% endblock %}
+
+{% block shell_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ems.css') }}">
+{% endblock %}
+
+{% block dashboard_content %}
+<div class="ems-container">
+
+  <!-- ==========================================================
+       1. TOP NAVIGATION & BACK BUTTON
+       ========================================================== -->
+  <nav class="ems-top-nav" aria-label="Page Navigation">
+    <a href="/" class="btn-back-home" id="btnBackHome" title="Return to Home Dashboard">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      <span>Back to Home Dashboard</span>
+    </a>
+
+    <div class="ems-nav-breadcrumbs" aria-label="Breadcrumb hierarchy">
+      <a href="/" class="crumb link">Home</a>
+      <span class="crumb-separator">/</span>
+      <span class="crumb current">Energy Management System (EMS)</span>
+    </div>
+  </nav>
+
+  <!-- ==========================================================
+       2. EMS PAGE HEADER
+       ========================================================== -->
+  <header class="ems-heading-banner">
+    <div class="ems-banner-left">
+      <div class="ems-title-group">
+        <div class="ems-category-tag">SUPERVISORY CONTROL &amp; DISPATCH &bull; 110/11 kV SUBSTATION</div>
+        <div class="ems-title-row">
+          <h1 class="ems-main-title">SMARTFEEDER EMS</h1>
+          <span class="ems-chip-green">Supervisory EMS</span>
+          <span class="ems-chip-blue">Feeder-Level DER Dispatch</span>
+        </div>
+        <p class="ems-subtitle">Energy Management System &mdash; Autonomous Measurement, Analysis, Decision Logic, and Dynamic Dispatch for Solar PV, BESS, and Utility Grid</p>
+      </div>
+    </div>
+
+    <div class="ems-banner-right">
+      <div class="ems-header-meta">
+        <div class="ems-status-indicator">
+          <span class="status-pulse-ring active" aria-hidden="true">
+            <span class="status-pulse-dot" id="emsStatusPulse"></span>
+          </span>
+          <span class="status-text" id="emsStatusText">ACTIVE</span>
+        </div>
+        <div class="ems-telemetry-badge" title="Latest Ingested Telemetry Timestamp">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span>LATEST TELEMETRY: <strong id="emsLatestTimestamp">{{ ems.timestamp_formatted if ems else '--' }}</strong></span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       3. TOP-LEVEL CURRENT OPERATING CONDITION (Industrial EMS Hero)
+       ========================================================== -->
+  <section class="ems-operating-condition-card" aria-label="Current Operating Condition">
+    <div class="condition-card-header">
+      <div class="condition-header-meta">
+        <span class="condition-kicker">SYSTEM OPERATING STATUS</span>
+        <span class="condition-state-pill">
+          <span class="state-dot" aria-hidden="true"></span>
+          <span>Real-Time Inferred State</span>
+        </span>
+      </div>
+      <div class="condition-dispatch-tag">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <span>Substation Coordinated Dispatch</span>
+      </div>
+    </div>
+
+    <div class="condition-main-content">
+      <div class="condition-title-group">
+        <span class="condition-eyebrow">CURRENT OPERATING CONDITION</span>
+        <h2 class="condition-title" id="operatingConditionTitle">{{ ems.operating_condition if ems else 'GRID + SOLAR + BESS' }}</h2>
+      </div>
+
+      <!-- Coordinated Source Nodes with Professional Line Icons (No Emojis) -->
+      <div class="coordinated-sources-strip" aria-label="Active Coordinated Energy Sources">
+        
+        <!-- Source 1: Utility Grid -->
+        <div class="source-node-pill active" id="nodeGrid" title="Utility Grid 110/11 kV Infeed Active">
+          <span class="source-node-icon grid-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </span>
+          <span class="source-node-name">Utility Grid</span>
+          <span class="source-node-status">Online</span>
+        </div>
+
+        <span class="source-link-operator" aria-hidden="true">+</span>
+
+        <!-- Source 2: Solar PV -->
+        <div class="source-node-pill active" id="nodeSolar" title="Solar PV Generation Active">
+          <span class="source-node-icon solar-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"></circle>
+              <path d="M12 2v2"></path>
+              <path d="M12 20v2"></path>
+              <path d="M4.93 4.93l1.41 1.41"></path>
+              <path d="M17.66 17.66l1.41 1.41"></path>
+              <path d="M2 12h2"></path>
+              <path d="M20 12h2"></path>
+            </svg>
+          </span>
+          <span class="source-node-name">Solar PV</span>
+          <span class="source-node-status">Generating</span>
+        </div>
+
+        <span class="source-link-operator" aria-hidden="true">+</span>
+
+        <!-- Source 3: BESS Storage -->
+        <div class="source-node-pill active" id="nodeBess" title="Battery Energy Storage Dispatch Active">
+          <span class="source-node-icon bess-icon" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="7" width="16" height="10" rx="2"></rect>
+              <line x1="22" y1="11" x2="22" y2="13"></line>
+            </svg>
+          </span>
+          <span class="source-node-name">BESS Storage</span>
+          <span class="source-node-status">Dispatching</span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="condition-footer-desc">
+      <p class="condition-desc" id="operatingConditionDesc">
+        Autonomous supervisory coordination active. System automatically balances Solar PV generation, battery energy storage dispatch, and utility grid import at 11 kV bus level.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       4. PRIMARY EMS CONTROL SUMMARY (4 Cards)
+       ========================================================== -->
+  <section class="ems-control-summary-section" aria-label="Primary EMS Control Summary">
+    <div class="control-cards-grid">
+
+      <!-- CARD 1: PV INVERTER SETPOINT -->
+      <div class="control-card pv-card">
+        <div class="card-accent-top amber"></div>
+        <div class="card-header">
+          <div class="card-icon-wrap amber-bg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M4.93 4.93l1.41 1.41"></path><path d="M17.66 17.66l1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path></svg>
+          </div>
+          <div class="card-title-group">
+            <span class="card-eyebrow">COMMAND DISPATCH</span>
+            <h2 class="card-title">PV INVERTER SETPOINT</h2>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-metric-block">
+            <span class="metric-top-label">TOTAL PV POWER</span>
+            <div class="card-primary-val">
+              <span class="val-num" id="pvInverterSetpoint">{{ "%.1f"|format(ems.control_summary.pv_inverter.setpoint_kw) if ems else '--.-' }}</span>
+              <span class="val-unit">kW</span>
+            </div>
+          </div>
+          <div class="card-sub-metrics pv-sub-metrics">
+            <div class="sub-item sub-item-breakdown">
+              <span class="sub-label">Solar-A:</span>
+              <span class="sub-val" id="pvSolarAPower">{{ "%.1f"|format(ems.control_summary.pv_inverter.solar_a_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="sub-item sub-item-breakdown">
+              <span class="sub-label">Solar-B:</span>
+              <span class="sub-val" id="pvSolarBPower">{{ "%.1f"|format(ems.control_summary.pv_inverter.solar_b_kw) if ems else '--.-' }} kW</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 2: BESS PCS SETPOINT -->
+      <div class="control-card bess-card">
+        <div class="card-accent-top blue"></div>
+        <div class="card-header">
+          <div class="card-icon-wrap blue-bg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="7" width="16" height="10" rx="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>
+          </div>
+          <div class="card-title-group">
+            <span class="card-eyebrow">BIDIRECTIONAL STORAGE</span>
+            <h2 class="card-title">BESS PCS SETPOINT</h2>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-metric-block">
+            <div class="card-primary-val">
+              <span class="val-num" id="bessPcsSetpoint">{{ "%.1f"|format(ems.control_summary.bess_pcs.setpoint_kw) if ems else '--.-' }}</span>
+              <span class="val-unit">kW</span>
+              <span class="direction-badge {{ 'badge-amber' if ems and ems.control_summary.bess_pcs.mode == 'DISCHARGE' else ('badge-green' if ems and ems.control_summary.bess_pcs.mode == 'CHARGE' else 'badge-neutral') }}" id="bessPcsMode">
+                {{ ems.control_summary.bess_pcs.mode if ems else 'IDLE' }}
+              </span>
+            </div>
+          </div>
+          <div class="card-sub-metrics">
+            <div class="sub-item">
+              <span class="sub-label">BESS-A Command:</span>
+              <span class="sub-val" id="bessAPcsCmd">{{ "%.1f"|format(ems.control_summary.bess_pcs.bess_a_setpoint_kw) if ems else '--.-' }} kW ({{ ems.control_summary.bess_pcs.bess_a_state if ems else 'IDLE' }})</span>
+            </div>
+            <div class="sub-item">
+              <span class="sub-label">BESS-B Command:</span>
+              <span class="sub-val" id="bessBPcsCmd">{{ "%.1f"|format(ems.control_summary.bess_pcs.bess_b_setpoint_kw) if ems else '--.-' }} kW ({{ ems.control_summary.bess_pcs.bess_b_state if ems else 'IDLE' }})</span>
+            </div>
+            <div class="sub-item">
+              <span class="sub-label">Coordinated Dispatch:</span>
+              <span class="status-chip chip-blue">OPTIMIZED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 3: UTILITY GRID IMPORT -->
+      <div class="control-card grid-card">
+        <div class="card-accent-top slate"></div>
+        <div class="card-header">
+          <div class="card-icon-wrap slate-bg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg>
+          </div>
+          <div class="card-title-group">
+            <span class="card-eyebrow">SUBSTATION INFEED</span>
+            <h2 class="card-title">UTILITY GRID IMPORT</h2>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-metric-block">
+            <span class="metric-top-label">TOTAL GRID IMPORT</span>
+            <div class="card-primary-val">
+              <span class="val-num" id="gridImportKw">{{ "%.1f"|format(ems.control_summary.grid_import.import_kw) if ems else '--.-' }}</span>
+              <span class="val-unit">kW</span>
+            </div>
+          </div>
+          <div class="card-sub-metrics">
+            <div class="sub-item sub-item-breakdown">
+              <span class="sub-label">BUS-1:</span>
+              <span class="sub-val" id="gridBus1Import">{{ "%.1f"|format(ems.control_summary.grid_import.bus1_grid_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="sub-item sub-item-breakdown">
+              <span class="sub-label">BUS-2:</span>
+              <span class="sub-val" id="gridBus2Import">{{ "%.1f"|format(ems.control_summary.grid_import.bus2_grid_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="sub-item divider-top">
+              <span class="sub-label">Frequency Synchronization:</span>
+              <span class="status-chip chip-green">LOCKED</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CARD 4: TOTAL FEEDER DEMAND -->
+      <div class="control-card load-card">
+        <div class="card-accent-top green"></div>
+        <div class="card-header">
+          <div class="card-icon-wrap green-bg">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+          </div>
+          <div class="card-title-group">
+            <span class="card-eyebrow">TOTAL SUBSTATION LOAD</span>
+            <h2 class="card-title">TOTAL FEEDER DEMAND</h2>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="card-metric-block">
+            <div class="card-primary-val">
+              <span class="val-num" id="totalFeederDemand">{{ "%.1f"|format(ems.control_summary.feeder_demand.total_kw) if ems else '--.-' }}</span>
+              <span class="val-unit">kW</span>
+            </div>
+          </div>
+          <div class="card-sub-metrics">
+            <div class="sub-item">
+              <span class="sub-label">BUS-1 Demand (Feeders 1&ndash;4):</span>
+              <span class="sub-val" id="bus1Demand">{{ "%.1f"|format(ems.control_summary.feeder_demand.bus1_demand_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="sub-item">
+              <span class="sub-label">BUS-2 Demand (Feeders 5&ndash;8):</span>
+              <span class="sub-val" id="bus2Demand">{{ "%.1f"|format(ems.control_summary.feeder_demand.bus2_demand_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="sub-item">
+              <span class="sub-label">Monitored Feeders:</span>
+              <span class="sub-val">8 Feeders Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       5. LIVE POWER BALANCE (MNC-Grade Energy Flow Visualization)
+       ========================================================== -->
+  <section class="ems-section-card" aria-label="Live Power Balance">
+    <div class="section-card-header">
+      <div class="section-header-left">
+        <span class="section-eyebrow">PHYSICAL CONSERVATION OF ENERGY</span>
+        <h2 class="section-main-title">LIVE POWER BALANCE</h2>
+        <span class="section-badge-clean">P_load = P_solar + P_bess + P_grid</span>
+      </div>
+      <div class="section-header-right">
+        <div class="balance-verified-chip {{ 'chip-green' if ems and ems.power_balance.is_balanced else 'chip-amber' }}" id="balanceVerifiedChip">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>BALANCED (&Delta; &le; 0.1 kW)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="power-balance-flow-container">
+      <div class="flow-blocks-row">
+
+        <!-- BLOCK 1: SOLAR PV -->
+        <div class="flow-block block-solar">
+          <div class="block-badge amber-badge">SOLAR PV</div>
+          <div class="block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="M4.93 4.93l1.41 1.41"></path><path d="M17.66 17.66l1.41 1.41"></path></svg>
+          </div>
+          <div class="block-val-wrap">
+            <span class="block-val" id="flowSolarVal">{{ "%.1f"|format(ems.power_balance.solar_generation_kw) if ems else '--.-' }}</span>
+            <span class="block-unit">kW</span>
+          </div>
+          <div class="block-sub">Solar-A + Solar-B (915 kWp)</div>
+          <div class="flow-arrow-down down-amber" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+          </div>
+        </div>
+
+        <div class="flow-operator">+</div>
+
+        <!-- BLOCK 2: BESS -->
+        <div class="flow-block block-bess">
+          <div class="block-badge blue-badge">BESS STORAGE</div>
+          <div class="block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="16" height="10" rx="2"></rect><line x1="22" y1="11" x2="22" y2="13"></line></svg>
+          </div>
+          <div class="block-val-wrap">
+            <span class="block-val" id="flowBessVal">{{ "%+.1f"|format(ems.power_balance.bess_power_kw) if ems else '--.-' }}</span>
+            <span class="block-unit">kW</span>
+          </div>
+          <div class="block-sub">{{ ems.power_balance.bess_mode if ems else 'IDLE' }} (4 MWh System)</div>
+          <div class="flow-arrow-down down-blue" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+          </div>
+        </div>
+
+        <div class="flow-operator">+</div>
+
+        <!-- BLOCK 3: UTILITY GRID -->
+        <div class="flow-block block-grid">
+          <div class="block-badge slate-badge">UTILITY GRID</div>
+          <div class="block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          </div>
+          <div class="block-val-wrap">
+            <span class="block-val" id="flowGridVal">{{ "%.1f"|format(ems.power_balance.grid_import_kw) if ems else '--.-' }}</span>
+            <span class="block-unit">kW</span>
+          </div>
+          <div class="block-sub">Residual Substation Import</div>
+          <div class="flow-arrow-down down-slate" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline></svg>
+          </div>
+        </div>
+
+        <div class="flow-operator">=</div>
+
+        <!-- BLOCK 4: FEEDER LOAD -->
+        <div class="flow-block block-load">
+          <div class="block-badge green-badge">FEEDER LOAD</div>
+          <div class="block-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>
+          </div>
+          <div class="block-val-wrap">
+            <span class="block-val" id="flowLoadVal">{{ "%.1f"|format(ems.power_balance.feeder_demand_kw) if ems else '--.-' }}</span>
+            <span class="block-unit">kW</span>
+          </div>
+          <div class="block-sub">8 Distribution Feeders</div>
+          <div class="flow-arrow-down down-green" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Formula Summary Ribbon -->
+      <div class="power-equation-ribbon">
+        <span class="ribbon-label">Governing Equation:</span>
+        <code class="ribbon-math" id="powerEquationMath">{{ ems.power_balance.equation if ems else 'P_load = P_solar + P_bess + P_grid' }}</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       6. SOLAR PV CONTROL SECTION (SOLAR-A & SOLAR-B)
+       ========================================================== -->
+  <section class="ems-section-card" aria-label="Solar PV Control">
+    <div class="section-card-header">
+      <div class="section-header-left">
+        <span class="section-eyebrow">RENEWABLE GENERATION ASSETS</span>
+        <h2 class="section-main-title">SOLAR PV CONTROL</h2>
+        <span class="section-badge-clean">915 kW Total Installed Inverter Capacity</span>
+      </div>
+    </div>
+
+    <div class="asset-pair-grid">
+
+      <!-- SOLAR-A -->
+      <div class="asset-card solar-asset">
+        <div class="asset-card-header">
+          <div class="asset-identity">
+            <div class="asset-name-row">
+              <h3 class="asset-name">SOLAR-A</h3>
+              <span class="asset-bus-pill">BUS-1</span>
+              <span class="asset-id-pill">ID: 114</span>
+            </div>
+            <div class="asset-capacity">495 kW Installed Capacity</div>
+          </div>
+          <div class="asset-status-wrap">
+            <span class="status-chip {{ 'chip-green' if ems and ems.solar_control.solar_a.status == 'ACTIVE' else 'chip-neutral' }}" id="solarAStatus">
+              {{ ems.solar_control.solar_a.status if ems else 'INACTIVE' }}
+            </span>
+          </div>
+        </div>
+        <div class="asset-card-body">
+          <div class="param-grid-2x3">
+            <div class="p-item">
+              <span class="p-label">Current Generation</span>
+              <span class="p-val" id="solarACurGen">{{ "%.1f"|format(ems.solar_control.solar_a.current_gen_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Available Solar Power</span>
+              <span class="p-val" id="solarAAvail">{{ "%.1f"|format(ems.solar_control.solar_a.available_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">PV Inverter Setpoint</span>
+              <span class="p-val highlight" id="solarASetpoint">{{ "%.1f"|format(ems.solar_control.solar_a.setpoint_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Utilized Solar Power</span>
+              <span class="p-val" id="solarAUtil">{{ "%.1f"|format(ems.solar_control.solar_a.utilized_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Curtailment</span>
+              <span class="p-val" id="solarACurtail">{{ "%.1f"|format(ems.solar_control.solar_a.curtailment_kw) if ems else '0.0' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Inactive Threshold</span>
+              <span class="p-val">&lt; 8.0 kW</span>
+            </div>
+          </div>
+        </div>
+        <div class="asset-card-footer">
+          <a href="/solar/a" class="link-asset-details">Open Solar-A Detailed Analysis &rarr;</a>
+        </div>
+      </div>
+
+      <!-- SOLAR-B -->
+      <div class="asset-card solar-asset">
+        <div class="asset-card-header">
+          <div class="asset-identity">
+            <div class="asset-name-row">
+              <h3 class="asset-name">SOLAR-B</h3>
+              <span class="asset-bus-pill">BUS-2</span>
+              <span class="asset-id-pill">ID: 166</span>
+            </div>
+            <div class="asset-capacity">420 kW Installed Capacity</div>
+          </div>
+          <div class="asset-status-wrap">
+            <span class="status-chip {{ 'chip-green' if ems and ems.solar_control.solar_b.status == 'ACTIVE' else 'chip-neutral' }}" id="solarBStatus">
+              {{ ems.solar_control.solar_b.status if ems else 'INACTIVE' }}
+            </span>
+          </div>
+        </div>
+        <div class="asset-card-body">
+          <div class="param-grid-2x3">
+            <div class="p-item">
+              <span class="p-label">Current Generation</span>
+              <span class="p-val" id="solarBCurGen">{{ "%.1f"|format(ems.solar_control.solar_b.current_gen_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Available Solar Power</span>
+              <span class="p-val" id="solarBAvail">{{ "%.1f"|format(ems.solar_control.solar_b.available_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">PV Inverter Setpoint</span>
+              <span class="p-val highlight" id="solarBSetpoint">{{ "%.1f"|format(ems.solar_control.solar_b.setpoint_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Utilized Solar Power</span>
+              <span class="p-val" id="solarBUtil">{{ "%.1f"|format(ems.solar_control.solar_b.utilized_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Curtailment</span>
+              <span class="p-val" id="solarBCurtail">{{ "%.1f"|format(ems.solar_control.solar_b.curtailment_kw) if ems else '0.0' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Inactive Threshold</span>
+              <span class="p-val">&lt; 8.0 kW</span>
+            </div>
+          </div>
+        </div>
+        <div class="asset-card-footer">
+          <a href="/solar/b" class="link-asset-details">Open Solar-B Detailed Analysis &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       7. BESS PCS CONTROL SECTION (BESS-A & BESS-B)
+       ========================================================== -->
+  <section class="ems-section-card" aria-label="BESS PCS Control">
+    <div class="section-card-header">
+      <div class="section-header-left">
+        <span class="section-eyebrow">BATTERY POWER CONVERSION SYSTEMS</span>
+        <h2 class="section-main-title">BESS PCS CONTROL</h2>
+        <span class="section-badge-clean">Operating Limits: 15% MIN &ndash; 90% MAX SOC</span>
+      </div>
+    </div>
+
+    <div class="asset-pair-grid">
+
+      <!-- BESS-A -->
+      <div class="asset-card bess-asset">
+        <div class="asset-card-header">
+          <div class="asset-identity">
+            <div class="asset-name-row">
+              <h3 class="asset-name">BESS-A</h3>
+              <span class="asset-bus-pill">BUS-1</span>
+              <span class="asset-id-pill">2 MWh (2000 kWh)</span>
+            </div>
+            <div class="asset-capacity">Associated Solar: Solar-A (495 kW)</div>
+          </div>
+          <div class="asset-status-wrap">
+            <span class="status-chip {{ 'chip-amber' if ems and ems.bess_control.bess_a.state == 'DISCHARGING' else ('chip-green' if ems and ems.bess_control.bess_a.state == 'CHARGING' else 'chip-neutral') }}" id="bessAState">
+              {{ ems.bess_control.bess_a.state if ems else 'IDLE' }}
+            </span>
+          </div>
+        </div>
+        <div class="asset-card-body">
+          <div class="param-grid-2x3">
+            <div class="p-item">
+              <span class="p-label">State of Charge (SOC)</span>
+              <span class="p-val" id="bessASoc">{{ "%.1f"|format(ems.bess_control.bess_a.soc_pct) if ems else '--.-' }} %</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">State of Health (SOH)</span>
+              <span class="p-val" id="bessASoh">{{ "%.2f"|format(ems.bess_control.bess_a.soh_pct) if ems else '--.--' }} %</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Stored Energy</span>
+              <span class="p-val" id="bessAEnergy">{{ "%.1f"|format(ems.bess_control.bess_a.stored_energy_kwh) if ems else '--.-' }} kWh</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Current Power</span>
+              <span class="p-val" id="bessAPower">{{ "%+.1f"|format(ems.bess_control.bess_a.current_power_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">PCS Command Setpoint</span>
+              <span class="p-val highlight" id="bessASetpoint">{{ "%.1f"|format(ems.bess_control.bess_a.setpoint_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Discharge Reserve (&gt;15%)</span>
+              <span class="p-val" id="bessAReserve">{{ "%.1f"|format(ems.bess_control.bess_a.discharge_reserve_kwh) if ems else '--.-' }} kWh</span>
+            </div>
+          </div>
+        </div>
+        <div class="asset-card-footer">
+          <a href="/bess/a" class="link-asset-details">Open BESS-A Detailed Analysis &rarr;</a>
+        </div>
+      </div>
+
+      <!-- BESS-B -->
+      <div class="asset-card bess-asset">
+        <div class="asset-card-header">
+          <div class="asset-identity">
+            <div class="asset-name-row">
+              <h3 class="asset-name">BESS-B</h3>
+              <span class="asset-bus-pill">BUS-2</span>
+              <span class="asset-id-pill">2 MWh (2000 kWh)</span>
+            </div>
+            <div class="asset-capacity">Associated Solar: Solar-B (420 kW)</div>
+          </div>
+          <div class="asset-status-wrap">
+            <span class="status-chip {{ 'chip-amber' if ems and ems.bess_control.bess_b.state == 'DISCHARGING' else ('chip-green' if ems and ems.bess_control.bess_b.state == 'CHARGING' else 'chip-neutral') }}" id="bessBState">
+              {{ ems.bess_control.bess_b.state if ems else 'IDLE' }}
+            </span>
+          </div>
+        </div>
+        <div class="asset-card-body">
+          <div class="param-grid-2x3">
+            <div class="p-item">
+              <span class="p-label">State of Charge (SOC)</span>
+              <span class="p-val" id="bessBSoc">{{ "%.1f"|format(ems.bess_control.bess_b.soc_pct) if ems else '--.-' }} %</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">State of Health (SOH)</span>
+              <span class="p-val" id="bessBSoh">{{ "%.2f"|format(ems.bess_control.bess_b.soh_pct) if ems else '--.--' }} %</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Stored Energy</span>
+              <span class="p-val" id="bessBEnergy">{{ "%.1f"|format(ems.bess_control.bess_b.stored_energy_kwh) if ems else '--.-' }} kWh</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Current Power</span>
+              <span class="p-val" id="bessBPower">{{ "%+.1f"|format(ems.bess_control.bess_b.current_power_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">PCS Command Setpoint</span>
+              <span class="p-val highlight" id="bessBSetpoint">{{ "%.1f"|format(ems.bess_control.bess_b.setpoint_kw) if ems else '--.-' }} kW</span>
+            </div>
+            <div class="p-item">
+              <span class="p-label">Discharge Reserve (&gt;15%)</span>
+              <span class="p-val" id="bessBReserve">{{ "%.1f"|format(ems.bess_control.bess_b.discharge_reserve_kwh) if ems else '--.-' }} kWh</span>
+            </div>
+          </div>
+        </div>
+        <div class="asset-card-footer">
+          <a href="/bess/b" class="link-asset-details">Open BESS-B Detailed Analysis &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Dynamic Reserve Architecture Bar -->
+    <div class="dynamic-reserve-callout">
+      <div class="reserve-callout-header">
+        <div class="reserve-title-group">
+          <span class="reserve-tag">DYNAMIC ENERGY RESERVE ARCHITECTURE</span>
+          <h4 class="reserve-title">E_reserve = Expected Deficit + Forecast Uncertainty Margin</h4>
+        </div>
+        <div class="reserve-metrics-group">
+          <div class="res-stat">
+            <span class="res-stat-label">Reserve Energy:</span>
+            <strong class="res-stat-val" id="reserveEnergyVal">{{ ems.bess_control.dynamic_reserve.reserve_energy_kwh if ems else '800.0' }} kWh</strong>
+          </div>
+          <div class="res-stat">
+            <span class="res-stat-label">Reserve Floor SOC:</span>
+            <strong class="res-stat-val" id="reserveSocVal">{{ ems.bess_control.dynamic_reserve.reserve_soc_pct if ems else '20.0' }} %</strong>
+          </div>
+          <div class="res-stat">
+            <span class="res-stat-label">Total Usable Discharge:</span>
+            <strong class="res-stat-val green-text" id="reserveAvailVal">{{ ems.bess_control.dynamic_reserve.available_discharge_kwh if ems else '--.-' }} kWh</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- ==========================================================
+       9. ACTIVE EMS COMMANDS (Inverter & PCS Setpoints Table)
+       ========================================================== -->
+  <section class="ems-section-card" aria-label="Active EMS Commands">
+    <div class="section-card-header">
+      <div class="section-header-left">
+        <span class="section-eyebrow">SUBSTATION FIELD BUS DISPATCH</span>
+        <h2 class="section-main-title">ACTIVE EMS COMMANDS</h2>
+        <span class="section-badge-clean">Supervisory Setpoints Transmitted via IEC 61850</span>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="ems-commands-table" id="tableEmsCommands">
+        <thead>
+          <tr>
+            <th scope="col">ASSET IDENTIFICATION</th>
+            <th scope="col">CONNECTED BUS</th>
+            <th scope="col">INSTALLED RATING</th>
+            <th scope="col">CURRENT MEASUREMENT</th>
+            <th scope="col">EMS SETPOINT COMMAND</th>
+            <th scope="col">OPERATING STATE</th>
+            <th scope="col">COMMAND STATUS</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if ems and ems.active_commands %}
+            {% for cmd in ems.active_commands %}
+            <tr>
+              <td><strong>{{ cmd.asset }}</strong></td>
+              <td><span class="bus-tag">{{ cmd.bus }}</span></td>
+              <td>{{ cmd.capacity }}</td>
+              <td>{{ cmd.current_meas }}</td>
+              <td><span class="setpoint-tag">{{ cmd.setpoint }}</span></td>
+              <td><span class="status-tag {{ cmd.status_badge_class }}">{{ cmd.operating_state }}</span></td>
+              <td><span class="command-tag {{ cmd.status_badge_class }}">{{ cmd.command_status }}</span></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="7" class="text-center">No active command telemetry available.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+
+
+  <!-- ==========================================================
+       11. NEXT 6-HOUR EMS OUTLOOK (Forecasting Horizon)
+       ========================================================== -->
+  <section class="ems-section-card" aria-label="Next 6-Hour EMS Outlook">
+    <div class="section-card-header">
+      <div class="section-header-left">
+        <span class="section-eyebrow">ROLLING 6-HOUR FORECASTING HORIZON</span>
+        <h2 class="section-main-title">NEXT 6-HOUR EMS OUTLOOK</h2>
+        <span class="section-badge-clean">SmartFeeder EMS Technical Trajectory Engine</span>
+      </div>
+      <div class="section-header-right">
+        <div class="forecast-engine-pill">
+          <span class="pulse-dot blue"></span>
+          <span>TEMPORARY FORECAST MODE &bull; ACTIVE</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="ems-outlook-table" id="tableEmsOutlook">
+        <thead>
+          <tr>
+            <th scope="col">FORECAST HOUR</th>
+            <th scope="col">EXPECTED LOAD (kW)</th>
+            <th scope="col">FORECAST SOLAR (kW)</th>
+            <th scope="col">FORECAST BESS POWER (kW)</th>
+            <th scope="col">PROJECTED SOC (%)</th>
+            <th scope="col">EXPECTED GRID IMPORT (kW)</th>
+            <th scope="col">EXPECTED EMS MODE</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if ems and ems.forecast_engine and ems.forecast_engine.outlook_hours %}
+            {% for row in ems.forecast_engine.outlook_hours %}
+            <tr>
+              <td><strong>{{ row.time }}</strong></td>
+              <td>{{ "%.1f"|format(row.forecast_load_kw) }} kW</td>
+              <td><span class="text-amber">{{ "%.1f"|format(row.forecast_solar_kw) }} kW</span></td>
+              <td><span class="text-blue">{{ "%+.1f"|format(row.forecast_bess_power_kw) }} kW</span></td>
+              <td><strong>{{ "%.1f"|format(row.forecast_soc_pct) }} %</strong></td>
+              <td>{{ "%.1f"|format(row.expected_grid_import_kw) }} kW</td>
+              <td><span class="mode-pill">{{ row.expected_mode }}</span></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr><td colspan="7" class="text-center">Forecast outlook data unavailable.</td></tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       12. EMS CONSTRAINTS & SYSTEM HEALTH (9 Status Cards)
+       ========================================================== -->
+  <section class="ems-section-card" aria-label="EMS Constraints & System Health">
+    <div class="section-card-header">
+      <div class="section-header-left">
+        <span class="section-eyebrow">SAFETY LIMITS &amp; HEALTH SUPERVISION</span>
+        <h2 class="section-main-title">EMS CONSTRAINTS &amp; SYSTEM HEALTH</h2>
+        <span class="section-badge-clean">Supervisory Interlocks &amp; Electrical Limits</span>
+      </div>
+    </div>
+
+    <div class="constraints-grid">
+      {% if ems and ems.constraints_health %}
+        {% for ch in ems.constraints_health %}
+        <div class="constraint-item-card">
+          <div class="c-header">
+            <span class="c-param-name">{{ ch.param }}</span>
+            <span class="c-status-chip {{ ch.status_class }}">{{ ch.status }}</span>
+          </div>
+          <div class="c-body">
+            <div class="c-row">
+              <span class="c-lbl">Limit / Standard:</span>
+              <span class="c-val">{{ ch.limit }}</span>
+            </div>
+            <div class="c-row">
+              <span class="c-lbl">Current Metric:</span>
+              <span class="c-val"><strong>{{ ch.current }}</strong></span>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       13. FOOTER BRANDING
+       ========================================================== -->
+  <footer class="ems-page-footer">
+    <p class="footer-credit">Developed for Schneider Yuva Yodha by Team Nexora</p>
+    <p class="footer-note">SmartFeeder EMS &bull; Autonomous Supervisory Control, Power Flow Coordination, and Feeder Optimization</p>
+  </footer>
+
+</div>
+
+<!-- Embedded Server-Side Telemetry for Instant Zero-Lag Rendering -->
+<script id="initialEmsTelemetry" type="application/json">
+  {{ ems | tojson | safe }}
+</script>
+<script src="{{ url_for('static', filename='js/ems.js') }}"></script>
+{% endblock %}
